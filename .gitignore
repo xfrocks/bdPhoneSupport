@@ -2,3 +2,4 @@
 *.devhelper
 library/bdPhoneSupport/DevHelper/Generated
 library/bdPhoneSupport/DevHelper/XFCP
+FileSums.php

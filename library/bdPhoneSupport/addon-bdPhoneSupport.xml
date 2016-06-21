@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="bdPhoneSupport" title="[bd] Phone Support" version_string="1.0.0" version_id="1000000" url="" install_callback_class="bdPhoneSupport_Installer" install_callback_method="install" uninstall_callback_class="bdPhoneSupport_Installer" uninstall_callback_method="uninstall">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="bdPhoneSupport_option_template_data_source"><![CDATA[<xen:radiounit label="{$preparedOption.title}"
+			   explain="{xen:raw $preparedOption.explain}"
+			   name="{$fieldPrefix}[{$preparedOption.option_id}][type]"
+			   value="{$preparedOption.option_value.type}">
+	<xen:option value="">{xen:phrase disabled}</xen:option>
+	<xen:option value="db" label="{xen:phrase bdPhoneSupport_data_source_db}">
+		<xen:textbox placeholder="{xen:phrase bdPhoneSupport_data_source_db_table}"
+					 name="{$fieldPrefix}[{$preparedOption.option_id}][dbTable]"
+					 value="{$preparedOption.option_value.dbTable}" />
+		<xen:textbox placeholder="{xen:phrase bdPhoneSupport_data_source_db_column}"
+					 name="{$fieldPrefix}[{$preparedOption.option_id}][dbColumn]"
+					 value="{$preparedOption.option_value.dbColumn}" />
+	</xen:option>
+	<xen:option value="userField" label="{xen:phrase bdPhoneSupport_data_source_user_field}">
+		<xen:textbox placeholder="{xen:phrase bdPhoneSupport_data_source_user_field_id}"
+					 name="{$fieldPrefix}[{$preparedOption.option_id}][userFieldId]"
+					 value="{$preparedOption.option_value.userFieldId}" />
+	</xen:option>
+
+	<xen:html>
+		<input type="hidden" name="{$listedFieldName}" value="{$preparedOption.option_id}" />
+		{xen:raw $editLink}
+	</xen:html>
+
+</xen:radiounit>]]></template>
+  </admin_templates>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="file_health_check" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="file_health_check" active="1" hint="" description=""/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerPublic_Account" active="1" hint="XenForo_ControllerPublic_Account" description="XenForo_ControllerPublic_Account"/>
+    <listener event_id="load_class_datawriter" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_DataWriter_User" active="1" hint="XenForo_DataWriter_User" description="XenForo_DataWriter_User"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups>
+    <group group_id="bdPhoneSupport" display_order="9999" debug_only="0"/>
+    <option option_id="bdPhoneSupport_codeFloodSeconds" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>60</default_value>
+      <edit_format_params>min=0</edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdPhoneSupport" display_order="50"/>
+    </option>
+    <option option_id="bdPhoneSupport_codeTtlSeconds" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>900</default_value>
+      <edit_format_params>min=1
+step=300</edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdPhoneSupport" display_order="50"/>
+    </option>
+    <option option_id="bdPhoneSupport_defaultCountryCallCode" edit_format="textbox" data_type="string" can_backup="1" validation_class="bdPhoneSupport_Helper_PhoneNumber" validation_method="validateOptionCountryCallingCode">
+      <default_value></default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdPhoneSupport" display_order="100"/>
+    </option>
+    <option option_id="bdPhoneSupport_oneUserPerPhone" edit_format="onoff" data_type="unsigned_integer" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdPhoneSupport" display_order="60"/>
+    </option>
+    <option option_id="bdPhoneSupport_primaryDataSource" edit_format="template" data_type="array" can_backup="1" validation_class="bdPhoneSupport_Helper_DataSource" validation_method="validateOption">
+      <default_value></default_value>
+      <edit_format_params>bdPhoneSupport_option_template_data_source</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="bdPhoneSupport" display_order="10"/>
+    </option>
+    <option option_id="bdPhoneSupport_primaryVerifiedDataSource" edit_format="template" data_type="array" can_backup="1" validation_class="bdPhoneSupport_Helper_DataSource" validation_method="validateOption">
+      <default_value></default_value>
+      <edit_format_params>bdPhoneSupport_option_template_data_source</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="bdPhoneSupport" display_order="15"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions>
+      <permission permission_group_id="general" permission_id="bdPhoneSupport_codeMax" permission_type="integer" default_value_int="0" interface_group_id="generalPermissions" display_order="9999"/>
+      <permission permission_group_id="general" permission_id="bdPhoneSupport_codePerDay" permission_type="integer" default_value_int="0" interface_group_id="generalPermissions" display_order="9999"/>
+    </permissions>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="bdPhoneSupport_account_phones" version_id="1000000" version_string="1.0.0"><![CDATA[Phones]]></phrase>
+    <phrase title="bdPhoneSupport_data_source_db" version_id="1000000" version_string="1.0.0"><![CDATA[Database]]></phrase>
+    <phrase title="bdPhoneSupport_data_source_db_column" version_id="1000000" version_string="1.0.0"><![CDATA[Column Name]]></phrase>
+    <phrase title="bdPhoneSupport_data_source_db_table" version_id="1000000" version_string="1.0.0"><![CDATA[Table Name]]></phrase>
+    <phrase title="bdPhoneSupport_data_source_user_field" version_id="1000000" version_string="1.0.0"><![CDATA[User Field]]></phrase>
+    <phrase title="bdPhoneSupport_data_source_user_field_id" version_id="1000000" version_string="1.0.0"><![CDATA[User Field ID]]></phrase>
+    <phrase title="bdPhoneSupport_error_cannot_send_code_exception" version_id="1000000" version_string="1.0.0"><![CDATA[We cannot send code to your phone right now due to a technical difficulty, please try again later. If this is the second time you have received this message, please contact our staff for assistance.]]></phrase>
+    <phrase title="bdPhoneSupport_error_cannot_send_code_too_many_attempts_today_x_of_y" version_id="1000000" version_string="1.0.0"><![CDATA[Sorry, we cannot send code to your phone right now because you have requested verification too many times today ({usage}). Your daily limit is {limit}, please try again later.]]></phrase>
+    <phrase title="bdPhoneSupport_error_cannot_send_code_too_many_attempts_x_of_y" version_id="1000000" version_string="1.0.0"><![CDATA[Sorry, we cannot send code to your phone because you have requested verification too many times ({usage}). Your account limit is {limit}.]]></phrase>
+    <phrase title="bdPhoneSupport_error_cannot_send_code_verified_someone_else" version_id="1000000" version_string="1.0.0"><![CDATA[We cannot send code to your phone because its number has been verified by someone else and it's our policy that each phone number can only be used once. If you believe this is a mistake, please contact our staff for assistance.]]></phrase>
+    <phrase title="bdPhoneSupport_error_cannot_verify" version_id="1000000" version_string="1.0.0"><![CDATA[Cannot verify your phone number, please make sure you have entered the code correctly and in a timely fashion. You may also try to request a new code to be sent to your phone.]]></phrase>
+    <phrase title="bdPhoneSupport_error_country_calling_code_invalid" version_id="1000000" version_string="1.0.0"><![CDATA[{ccc} is not a valid country calling code.]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_db_column_invalid" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified column name ({column}) is invalid.]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_db_column_missing" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: Database Column Name is required.]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_db_column_not_found" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified column ({column}) cannot be found in table `{table}`.]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_db_table_missing" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: Database Table Name is required.]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_db_table_not_found" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified table ({table}) cannot be found.]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_db_table_no_user_id" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified table ({table}) does not have an `user_id` column.]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_type_unknown" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: Unrecognized data source type ({type}).]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_user_field_id_invalid" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified user field ID ({user_field_id}) is invalid.]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_user_field_id_missing" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: User Field ID is required.]]></phrase>
+    <phrase title="bdPhoneSupport_error_data_source_user_field_id_not_found" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified user field ID ({user_field_id}) cannot be found.]]></phrase>
+    <phrase title="bdPhoneSupport_number_not_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has not been verified.]]></phrase>
+    <phrase title="bdPhoneSupport_number_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has been verified.]]></phrase>
+    <phrase title="bdPhoneSupport_primary_phone_number" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Number]]></phrase>
+    <phrase title="bdPhoneSupport_request_verification_code" version_id="1000000" version_string="1.0.0"><![CDATA[Request Verification Code]]></phrase>
+    <phrase title="bdPhoneSupport_request_verification_code_explain" version_id="1000000" version_string="1.0.0"><![CDATA[You may request the verification to be sent again if you haven't received it after a while.]]></phrase>
+    <phrase title="bdPhoneSupport_sent_code_phone_x" version_id="1000000" version_string="1.0.0"><![CDATA[Verification code has been sent to your phone ({phone_number}).]]></phrase>
+    <phrase title="bdPhoneSupport_sms_hi_x_verify_y_code_x" version_id="1000000" version_string="1.0.0"><![CDATA[Hi {username}, please enter {code_text} to verify your phone number ({phone_number}) on {board_title}.]]></phrase>
+    <phrase title="bdPhoneSupport_verification_code" version_id="1000000" version_string="1.0.0"><![CDATA[Verification Code]]></phrase>
+    <phrase title="bdPhoneSupport_verification_code_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Please enter the verification code that we have sent to your phone to verify the number.]]></phrase>
+    <phrase title="bdPhoneSupport_your_primary_phone_number_updated" version_id="1000000" version_string="1.0.0"><![CDATA[Your primary phone number has been updated.]]></phrase>
+    <phrase title="bdPhoneSupport_your_primary_phone_number_verified" version_id="1000000" version_string="1.0.0"><![CDATA[Your primary phone number has been verified.]]></phrase>
+    <phrase title="option_bdPhoneSupport_codeFloodSeconds" version_id="1000000" version_string="1.0.0"><![CDATA[Minimum Time Between Verifications]]></phrase>
+    <phrase title="option_bdPhoneSupport_codeFloodSeconds_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Users will have to wait this many seconds between verification attempts. Users with the permission "Can Bypass Flood Check" will be exempt from this option.]]></phrase>
+    <phrase title="option_bdPhoneSupport_codeTtlSeconds" version_id="1000000" version_string="1.0.0"><![CDATA[Verification Code TTL]]></phrase>
+    <phrase title="option_bdPhoneSupport_codeTtlSeconds_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Enter the number of seconds for which a verification code stays valid.]]></phrase>
+    <phrase title="option_bdPhoneSupport_defaultCountryCallCode" version_id="1000000" version_string="1.0.0"><![CDATA[Default CCC]]></phrase>
+    <phrase title="option_bdPhoneSupport_defaultCountryCallCode_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Enter the default Country Calling Code including the plus sign (+) prefix.]]></phrase>
+    <phrase title="option_bdPhoneSupport_oneUserPerPhone" version_id="1000000" version_string="1.0.0"><![CDATA[One User Per Phone]]></phrase>
+    <phrase title="option_bdPhoneSupport_oneUserPerPhone_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Enable this option to enforce one user per phone rule. User won't be able to verify a phone number if it has been verified for someone else account.]]></phrase>
+    <phrase title="option_bdPhoneSupport_primaryDataSource" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Number]]></phrase>
+    <phrase title="option_bdPhoneSupport_primaryDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for user primary phone number.]]></phrase>
+    <phrase title="option_bdPhoneSupport_primaryVerifiedDataSource" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Verified]]></phrase>
+    <phrase title="option_bdPhoneSupport_primaryVerifiedDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for verified status of user primary phone. If no data source is provided, no verification will take place when the phone number is changed.]]></phrase>
+    <phrase title="option_group_bdPhoneSupport" version_id="1000000" version_string="1.0.0"><![CDATA[[bd] Phone Support]]></phrase>
+    <phrase title="option_group_bdPhoneSupport_description" version_id="1000000" version_string="1.0.0"><![CDATA[]]></phrase>
+    <phrase title="permission_general_bdPhoneSupport_codeMax" version_id="1000000" version_string="1.0.0"><![CDATA[[bd] Phone Support: Maximum attempts]]></phrase>
+    <phrase title="permission_general_bdPhoneSupport_codePerDay" version_id="1000000" version_string="1.0.0"><![CDATA[[bd] Phone Support: Attempts daily]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates>
+    <template title="bdPhoneSupport_account_phones" version_id="1000000" version_string="1.0.0"><![CDATA[<xen:title>{xen:phrase bdPhoneSupport_account_phones}</xen:title>
+
+<form action="{xen:link account/phones}" method="post"
+	  class="xenForm formOverlay AutoValidator"
+	  data-redirect="yes">
+
+	<xen:if is="{$primaryPhoneNumber} !== null">
+	<dl class="ctrlUnit primary{xen:if $primaryVerified, ' verified'}">
+		<dt>{xen:phrase bdPhoneSupport_primary_phone_number}:</dt>
+		<dd>
+			<input name="primary"
+				   value="{$primaryPhoneNumber}"
+				   type="text"
+				   class="textCtrl" />
+			<p class="explain">
+				<xen:if is="{$primaryVerified} === true">
+					{xen:phrase bdPhoneSupport_number_verified}
+				<xen:elseif is="{$primaryVerified} === false" />
+					{xen:phrase bdPhoneSupport_number_not_verified}
+				</xen:if>
+			</p>
+		</dd>
+	</dl>
+
+	<xen:if is="{$primaryPhoneNumber} && {$primaryVerified} === false">
+	<dl class="ctrlUnit primary_verify">
+		<dt>{xen:phrase bdPhoneSupport_verification_code}:</dt>
+		<dd>
+			<input name="primary_verify" type="text" class="textCtrl" />
+			<p class="explain">{xen:phrase bdPhoneSupport_verification_code_explain}</p>
+		</dd>
+	</dl>
+
+	<dl class="ctrlUnit request_verify--primary">
+		<dt>&nbsp;</dt>
+		<dd>
+			<label>
+				<input type="checkbox" name="request_verify[]" value="{$primaryPhoneNumber}" />
+				{xen:phrase bdPhoneSupport_request_verification_code}
+			</label>
+			<p class="explain">{xen:phrase bdPhoneSupport_request_verification_code_explain}</p>
+		</dd>
+	</dl>
+	</xen:if>
+	</xen:if>
+
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd>
+			<input type="submit" value="{xen:phrase save}" class="button primary" />
+		</dd>
+	</dl>
+
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+	<input type="hidden" name="_xfConfirm" value="1" />
+</form>]]></template>
+  </templates>
+  <public_template_modifications/>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
