@@ -29,12 +29,44 @@
 	</xen:html>
 
 </xen:radiounit>]]></template>
+    <template title="bdPhoneSupport_option_template_twilio"><![CDATA[<xen:controlunit label="{$preparedOption.title}"
+			   explain="{xen:raw $preparedOption.explain}">
+	<xen:html>
+		<xen:textbox placeholder="{xen:phrase bdPhoneSupport_twilio_account_sid}"
+					 name="{$fieldPrefix}[{$preparedOption.option_id}][accountSid]"
+					 value="{$preparedOption.option_value.accountSid}" /><br /><br />
+
+		<xen:textbox placeholder="{xen:phrase bdPhoneSupport_twilio_auth_token}"
+					 type="password"
+					 name="{$fieldPrefix}[{$preparedOption.option_id}][authToken]"
+					 value="{$preparedOption.option_value.authToken}" /><br /><br />
+
+		<xen:radio name="senderIdOrServiceSid" value="{xen:if $preparedOption.option_value.senderId,
+													  senderId, serviceSid}">
+			<xen:option value="senderId" label="{xen:phrase bdPhoneSupport_twilio_single_sender}">
+				<xen:textbox placeholder="{xen:phrase bdPhoneSupport_twilio_sender_id}"
+							 name="{$fieldPrefix}[{$preparedOption.option_id}][senderId]"
+							 value="{$preparedOption.option_value.senderId}" />
+			</xen:option>
+			<xen:option value="serviceSid" label="{xen:phrase bdPhoneSupport_twilio_messaging_service}">
+				<xen:textbox placeholder="{xen:phrase bdPhoneSupport_twilio_service_sid}"
+							 name="{$fieldPrefix}[{$preparedOption.option_id}][serviceSid]"
+							 value="{$preparedOption.option_value.serviceSid}" />
+			</xen:option>
+		</xen:radio>
+
+		<input type="hidden" name="{$listedFieldName}" value="{$preparedOption.option_id}" />
+		{xen:raw $editLink}
+	</xen:html>
+
+</xen:controlunit>]]></template>
   </admin_templates>
   <admin_template_modifications/>
   <code_events/>
   <code_event_listeners>
     <listener event_id="file_health_check" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="file_health_check" active="1" hint="" description=""/>
     <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerPublic_Account" active="1" hint="XenForo_ControllerPublic_Account" description="XenForo_ControllerPublic_Account"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerPublic_Misc" active="1" hint="XenForo_ControllerPublic_Misc" description="XenForo_ControllerPublic_Misc"/>
     <listener event_id="load_class_datawriter" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_DataWriter_User" active="1" hint="XenForo_DataWriter_User" description="XenForo_DataWriter_User"/>
   </code_event_listeners>
   <cron/>
@@ -79,6 +111,12 @@ step=300</edit_format_params>
       <sub_options>*</sub_options>
       <relation group_id="bdPhoneSupport" display_order="15"/>
     </option>
+    <option option_id="bdPhoneSupport_twilio" edit_format="template" data_type="array" can_backup="1">
+      <default_value></default_value>
+      <edit_format_params>bdPhoneSupport_option_template_twilio</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="bdPhoneSupport" display_order="1000"/>
+    </option>
   </optiongroups>
   <permissions>
     <permission_groups/>
@@ -118,6 +156,12 @@ step=300</edit_format_params>
     <phrase title="bdPhoneSupport_request_verification_code_explain" version_id="1000000" version_string="1.0.0"><![CDATA[You may request the verification to be sent again if you haven't received it after a while.]]></phrase>
     <phrase title="bdPhoneSupport_sent_code_phone_x" version_id="1000000" version_string="1.0.0"><![CDATA[Verification code has been sent to your phone ({phone_number}).]]></phrase>
     <phrase title="bdPhoneSupport_sms_hi_x_verify_y_code_x" version_id="1000000" version_string="1.0.0"><![CDATA[Hi {username}, please enter {code_text} to verify your phone number ({phone_number}) on {board_title}.]]></phrase>
+    <phrase title="bdPhoneSupport_twilio_account_sid" version_id="1000000" version_string="1.0.0"><![CDATA[Account SID]]></phrase>
+    <phrase title="bdPhoneSupport_twilio_auth_token" version_id="1000000" version_string="1.0.0"><![CDATA[Auth Token]]></phrase>
+    <phrase title="bdPhoneSupport_twilio_messaging_service" version_id="1000000" version_string="1.0.0"><![CDATA[Send messages via a messaging service]]></phrase>
+    <phrase title="bdPhoneSupport_twilio_sender_id" version_id="1000000" version_string="1.0.0"><![CDATA[Sender ID]]></phrase>
+    <phrase title="bdPhoneSupport_twilio_service_sid" version_id="1000000" version_string="1.0.0"><![CDATA[Messaging Service SID]]></phrase>
+    <phrase title="bdPhoneSupport_twilio_single_sender" version_id="1000000" version_string="1.0.0"><![CDATA[Send messages via a single sender]]></phrase>
     <phrase title="bdPhoneSupport_verification_code" version_id="1000000" version_string="1.0.0"><![CDATA[Verification Code]]></phrase>
     <phrase title="bdPhoneSupport_verification_code_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Please enter the verification code that we have sent to your phone to verify the number.]]></phrase>
     <phrase title="bdPhoneSupport_your_primary_phone_number_updated" version_id="1000000" version_string="1.0.0"><![CDATA[Your primary phone number has been updated.]]></phrase>
@@ -134,6 +178,8 @@ step=300</edit_format_params>
     <phrase title="option_bdPhoneSupport_primaryDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for user primary phone number.]]></phrase>
     <phrase title="option_bdPhoneSupport_primaryVerifiedDataSource" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Verified]]></phrase>
     <phrase title="option_bdPhoneSupport_primaryVerifiedDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for verified status of user primary phone. If no data source is provided, no verification will take place when the phone number is changed.]]></phrase>
+    <phrase title="option_bdPhoneSupport_twilio" version_id="1000000" version_string="1.0.0"><![CDATA[Twilio]]></phrase>
+    <phrase title="option_bdPhoneSupport_twilio_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Configure <a href="https://www.twilio.com" target="_blank" tabindex="-1">Twilio</a> to send verification messages.]]></phrase>
     <phrase title="option_group_bdPhoneSupport" version_id="1000000" version_string="1.0.0"><![CDATA[[bd] Phone Support]]></phrase>
     <phrase title="option_group_bdPhoneSupport_description" version_id="1000000" version_string="1.0.0"><![CDATA[]]></phrase>
     <phrase title="permission_general_bdPhoneSupport_codeMax" version_id="1000000" version_string="1.0.0"><![CDATA[[bd] Phone Support: Maximum attempts]]></phrase>

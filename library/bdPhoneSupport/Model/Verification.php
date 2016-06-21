@@ -55,6 +55,7 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
             $userPhoneModel = $this->getModelFromCache('bdPhoneSupport_Model_UserPhone');
             $users = $userPhoneModel->getUsersByPhoneNumber($phoneNumber, $viewingUser['user_id']);
             if (count($users) > 0) {
+                // new XenForo_Phrase('bdPhoneSupport_error_cannot_send_code_verified_someone_else')
                 $errorPhraseKey = 'bdPhoneSupport_error_cannot_send_code_verified_someone_else';
                 return false;
             }
@@ -73,8 +74,8 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
 
     public function verifyCode($userId, $phoneNumber, $codeText)
     {
-        $codeId = $this->_getDb()->fetchOne('
-            SELECT code_id
+        $code = $this->_getDb()->fetchRow('
+            SELECT *
             FROM `xf_bdphonesupport_code`
             WHERE
                 user_id = ?
@@ -89,7 +90,7 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
             XenForo_Application::$time - bdPhoneSupport_Option::get('codeTtlSeconds')
         ));
 
-        if (empty($codeId)) {
+        if (empty($code)) {
             $this->_getDb()->insert('xf_bdphonesupport_code', array(
                 'user_id' => $userId,
                 'phone_number' => $phoneNumber,
@@ -100,9 +101,16 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
             return false;
         }
 
+        $codeData = unserialize($code['data']);
+        $codeData['verifyBacktrace'] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $codeData['verifySessionData'] = XenForo_Application::getSession()->getAll();
+
         $this->_getDb()->update('xf_bdphonesupport_code',
-            array('verify_date' => XenForo_Application::$time),
-            array('code_id = ?' => $codeId));
+            array(
+                'verify_date' => XenForo_Application::$time,
+                'data' => serialize($codeData)
+            ),
+            array('code_id = ?' => $code['code_id']));
 
         return true;
     }
@@ -117,21 +125,31 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
     protected function _sendVerificationCode($userId, $phoneNumber, $userName)
     {
         $codeText = $this->_generateCodeTextForUserAndPhoneNumber($userId, $phoneNumber);
+        $codeData = array(
+            'generateBacktrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
+            'generateSessionData' => XenForo_Application::getSession()->getAll()
+        );
 
         /** @var bdPhoneSupport_Model_Sms $smsModel */
         $smsModel = $this->getModelFromCache('bdPhoneSupport_Model_Sms');
-        $smsModel->send($phoneNumber, new XenForo_Phrase('bdPhoneSupport_sms_hi_x_verify_y_code_x', array(
-            'username' => $userName,
-            'phone_number' => bdPhoneSupport_Helper_PhoneNumber::standardize($phoneNumber),
-            'code_text' => $codeText,
-            'board_title' => XenForo_Application::getOptions()->get('boardTitle')
-        )));
+
+        $codeData['smsResult'] = $smsModel->send($phoneNumber,
+            new XenForo_Phrase('bdPhoneSupport_sms_hi_x_verify_y_code_x',
+                array(
+                    'username' => $userName,
+                    'phone_number' => bdPhoneSupport_Helper_PhoneNumber::standardize($phoneNumber),
+                    'code_text' => $codeText,
+                    'board_title' => XenForo_Application::getOptions()->get('boardTitle')
+                )
+            )
+        );
 
         $this->_getDb()->insert('xf_bdphonesupport_code', array(
             'user_id' => $userId,
             'phone_number' => $phoneNumber,
             'code_text' => $codeText,
-            'generate_date' => XenForo_Application::$time
+            'generate_date' => XenForo_Application::$time,
+            'data' => serialize($codeData)
         ));
     }
 

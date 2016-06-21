@@ -52,6 +52,27 @@ class bdPhoneSupport_DevHelper_Config extends DevHelper_Config_Base
             ),
             'files' => array('data_writer' => false, 'model' => false, 'route_prefix_admin' => false, 'controller_admin' => false),
         ),
+        'log' => array(
+            'name' => 'log',
+            'camelCase' => 'Log',
+            'camelCasePlural' => 'Logs',
+            'camelCaseWSpace' => 'Log',
+            'camelCasePluralWSpace' => 'Logs',
+            'fields' => array(
+                'log_id' => array('name' => 'log_id', 'type' => 'uint', 'autoIncrement' => true),
+                'provider_id' => array('name' => 'provider_id', 'type' => 'string', 'length' => '255', 'required' => true),
+                'action' => array('name' => 'action', 'type' => 'string', 'length' => '255', 'required' => true),
+                'action_date' => array('name' => 'action_date', 'type' => 'uint', 'required' => true),
+                'log_data' => array('name' => 'data', 'type' => 'serialized'),
+            ),
+            'phrases' => array(),
+            'title_field' => 'provider_id',
+            'primaryKey' => array('log_id'),
+            'indeces' => array(
+                'provider_id' => array('name' => 'provider_id', 'fields' => array('provider_id'), 'type' => 'NORMAL'),
+            ),
+            'files' => array('data_writer' => false, 'model' => false, 'route_prefix_admin' => false, 'controller_admin' => false),
+        ),
     );
     protected $_dataPatches = array();
     protected $_exportPath = '/Users/sondh/XenForo/bdPhoneSupport';

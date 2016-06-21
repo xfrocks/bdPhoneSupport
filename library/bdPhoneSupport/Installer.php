@@ -32,6 +32,18 @@ class bdPhoneSupport_Installer
             ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
             'dropQuery' => 'DROP TABLE IF EXISTS `xf_bdphonesupport_user_phone`',
         ),
+        'log' => array(
+            'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_bdphonesupport_log` (
+                `log_id` INT(10) UNSIGNED AUTO_INCREMENT
+                ,`provider_id` VARCHAR(255) NOT NULL
+                ,`action` VARCHAR(255) NOT NULL
+                ,`action_date` INT(10) UNSIGNED NOT NULL
+                ,`data` MEDIUMBLOB
+                , PRIMARY KEY (`log_id`)
+                ,INDEX `provider_id` (`provider_id`)
+            ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
+            'dropQuery' => 'DROP TABLE IF EXISTS `xf_bdphonesupport_log`',
+        ),
     );
     protected static $_patches = array();
 

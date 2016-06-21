@@ -20,4 +20,11 @@ class bdPhoneSupport_Listener
     {
         $hashes += bdPhoneSupport_FileSums::getHashes();
     }
+
+    public static function load_class_XenForo_ControllerPublic_Misc($class, array &$extend)
+    {
+        if ($class === 'XenForo_ControllerPublic_Misc') {
+            $extend[] = 'bdPhoneSupport_XenForo_ControllerPublic_Misc';
+        }
+    }
 }
