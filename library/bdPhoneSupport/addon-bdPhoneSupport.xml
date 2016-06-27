@@ -111,6 +111,12 @@ step=300</edit_format_params>
       <sub_options>*</sub_options>
       <relation group_id="bdPhoneSupport" display_order="15"/>
     </option>
+    <option option_id="bdPhoneSupport_someVerifiedDataSource" edit_format="template" data_type="array" can_backup="1" validation_class="bdPhoneSupport_Helper_DataSource" validation_method="validateOption">
+      <default_value></default_value>
+      <edit_format_params>bdPhoneSupport_option_template_data_source</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="bdPhoneSupport" display_order="20"/>
+    </option>
     <option option_id="bdPhoneSupport_twilio" edit_format="template" data_type="array" can_backup="1">
       <default_value></default_value>
       <edit_format_params>bdPhoneSupport_option_template_twilio</edit_format_params>
@@ -178,6 +184,8 @@ step=300</edit_format_params>
     <phrase title="option_bdPhoneSupport_primaryDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for user primary phone number.]]></phrase>
     <phrase title="option_bdPhoneSupport_primaryVerifiedDataSource" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Verified]]></phrase>
     <phrase title="option_bdPhoneSupport_primaryVerifiedDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for verified status of user primary phone. If no data source is provided, no verification will take place when the phone number is changed.]]></phrase>
+    <phrase title="option_bdPhoneSupport_someVerifiedDataSource" version_id="1000000" version_string="1.0.0"><![CDATA[Some Phone Verified]]></phrase>
+    <phrase title="option_bdPhoneSupport_someVerifiedDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for verified status of any of user phones. This is slightly different from "Primary Phone Verified" that it will not be reset when user changes his/her number.]]></phrase>
     <phrase title="option_bdPhoneSupport_twilio" version_id="1000000" version_string="1.0.0"><![CDATA[Twilio]]></phrase>
     <phrase title="option_bdPhoneSupport_twilio_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Configure <a href="https://www.twilio.com" target="_blank" tabindex="-1">Twilio</a> to send verification messages.]]></phrase>
     <phrase title="option_group_bdPhoneSupport" version_id="1000000" version_string="1.0.0"><![CDATA[[bd] Phone Support]]></phrase>

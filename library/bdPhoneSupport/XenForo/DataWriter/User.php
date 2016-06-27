@@ -13,6 +13,8 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
             bdPhoneSupport_Helper_DataSource::OPTION_KEY_PHONE_NUMBER, $fields);
         bdPhoneSupport_Helper_DataSource::prepareUserFields('primary',
             bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED, $fields);
+        bdPhoneSupport_Helper_DataSource::prepareUserFields('some',
+            bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED, $fields);
 
         return $fields;
     }

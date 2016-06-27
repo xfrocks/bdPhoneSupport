@@ -20,6 +20,23 @@ class bdPhoneSupport_Helper_DataSource
             $userDw->setExistingData($userIdOrArray);
         }
 
+        self::setUserValueDw($userDw, $optionKeyFormat, $dataSource, $value);
+
+        if ($optionKeyFormat === self::OPTION_KEY_VERIFIED
+            && $value > 0
+            && $type !== 'some'
+        ) {
+            $someDataSource = bdPhoneSupport_Option::get(self::_buildOptionKey('some', $optionKeyFormat));
+            if (!empty($someDataSource['type'])) {
+                self::setUserValueDw($userDw, $optionKeyFormat, $someDataSource, 1);
+            }
+        }
+
+        return $userDw->save();
+    }
+
+    public static function setUserValueDw(XenForo_DataWriter_User $userDw, $optionKeyFormat, $dataSource, $value)
+    {
         switch ($dataSource['type']) {
             case 'db':
                 $userDw->set($dataSource['dbColumn'], $value, $dataSource['dbTable']);
@@ -31,8 +48,6 @@ class bdPhoneSupport_Helper_DataSource
                 $userDw->setCustomFields(array($dataSource['userFieldId'] => $value));
                 break;
         }
-
-        return $userDw->save();
     }
 
     public static function getUserValue($type, $optionKeyFormat, $userIdOrArray)
@@ -91,9 +106,9 @@ class bdPhoneSupport_Helper_DataSource
         if (!empty($dataSource['type'])
             && $dataSource['type'] === 'db'
             && isset($fields[$dataSource['dbTable']])
-            && !isset($fields[$dataSource['dbTable']['dbColumn']])
+            && !isset($fields[$dataSource['dbTable']][$dataSource['dbColumn']])
         ) {
-            $fields[$dataSource['dbTable']['dbColumn']] = array('type' => XenForo_DataWriter::TYPE_STRING);
+            $fields[$dataSource['dbTable']][$dataSource['dbColumn']] = array('type' => XenForo_DataWriter::TYPE_STRING);
         }
     }
 
@@ -118,6 +133,7 @@ class bdPhoneSupport_Helper_DataSource
                 );
                 break;
             case 'bdPhoneSupport_primaryVerifiedDataSource':
+            case 'bdPhoneSupport_someVerifiedDataSource':
                 $config = array(
                     'dbColumnSchema' => 'TINYINT(3) UNSIGNED NOT NULL DEFAULT \'0\'',
                     'userFieldBulkSet' => array(
