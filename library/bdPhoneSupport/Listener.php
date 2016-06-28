@@ -2,6 +2,12 @@
 
 class bdPhoneSupport_Listener
 {
+    public static function container_public_params(array &$params, XenForo_Dependencies_Abstract $dependencies)
+    {
+        /** @noinspection PhpParamsInspection */
+        bdPhoneSupport_Integration::showPrimaryVerifyNotice($params, $dependencies);
+    }
+
     public static function load_class_XenForo_DataWriter_User($class, array &$extend)
     {
         if ($class === 'XenForo_DataWriter_User') {

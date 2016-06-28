@@ -54,9 +54,9 @@ class bdPhoneSupport_Integration
         return true;
     }
 
-    public static function getUserPhoneNumber($type = 'primary', array $user = null)
+    public static function getUserPhoneNumber($type = 'primary', array $user = array())
     {
-        if ($user === null) {
+        if (!isset($user['user_id'])) {
             $user = XenForo_Visitor::getInstance()->toArray();
         }
 
@@ -69,9 +69,9 @@ class bdPhoneSupport_Integration
         return bdPhoneSupport_Helper_PhoneNumber::standardize($phoneNumber);
     }
 
-    public static function getUserVerified($type = 'primary', array $user = null)
+    public static function getUserVerified($type = 'primary', array $user = array())
     {
-        if ($user === null) {
+        if (!isset($user['user_id'])) {
             $user = XenForo_Visitor::getInstance()->toArray();
         }
 
@@ -84,9 +84,9 @@ class bdPhoneSupport_Integration
         return strval($verified) === '1';
     }
 
-    public static function updateUserPhones(array $user = null)
+    public static function updateUserPhones(array $user = array())
     {
-        if ($user === null) {
+        if (!isset($user['user_id'])) {
             $user = XenForo_Visitor::getInstance()->toArray();
         }
 
@@ -103,5 +103,27 @@ class bdPhoneSupport_Integration
         /** @var bdPhoneSupport_Model_UserPhone $userPhoneModel */
         $userPhoneModel = XenForo_Model::create('bdPhoneSupport_Model_UserPhone');
         return $userPhoneModel->updateUserPhones($user['user_id'], $phoneNumbers);
+    }
+
+    public static function showPrimaryVerifyNotice(array &$containerParams, XenForo_Dependencies_Public $dependencies)
+    {
+        if (!bdPhoneSupport_Option::get('primaryVerifyNotice')) {
+            return;
+        }
+
+        $phoneNumber = self::getUserPhoneNumber();
+        if (empty($phoneNumber)) {
+            return;
+        }
+
+        $verified = self::getUserVerified();
+        if ($verified !== false) {
+            return;
+        }
+
+        // new XenForo_Phrase('bdPhoneSupport_showPrimaryVerifyNotice')
+        $paramKey = 'bdPhoneSupport_showPrimaryVerifyNotice';
+        $containerParams[$paramKey] = true;
+        $dependencies->notices[$paramKey] = 'bdPhoneSupport_notice_verify_primary';
     }
 }

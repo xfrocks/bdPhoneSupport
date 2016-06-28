@@ -64,6 +64,7 @@
   <admin_template_modifications/>
   <code_events/>
   <code_event_listeners>
+    <listener event_id="container_public_params" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="container_public_params" active="1" hint="" description=""/>
     <listener event_id="file_health_check" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="file_health_check" active="1" hint="" description=""/>
     <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerPublic_Account" active="1" hint="XenForo_ControllerPublic_Account" description="XenForo_ControllerPublic_Account"/>
     <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerPublic_Misc" active="1" hint="XenForo_ControllerPublic_Misc" description="XenForo_ControllerPublic_Misc"/>
@@ -111,6 +112,12 @@ step=300</edit_format_params>
       <sub_options>*</sub_options>
       <relation group_id="bdPhoneSupport" display_order="15"/>
     </option>
+    <option option_id="bdPhoneSupport_primaryVerifyNotice" edit_format="onoff" data_type="unsigned_integer" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdPhoneSupport" display_order="5000"/>
+    </option>
     <option option_id="bdPhoneSupport_someVerifiedDataSource" edit_format="template" data_type="array" can_backup="1" validation_class="bdPhoneSupport_Helper_DataSource" validation_method="validateOption">
       <default_value></default_value>
       <edit_format_params>bdPhoneSupport_option_template_data_source</edit_format_params>
@@ -139,6 +146,7 @@ step=300</edit_format_params>
     <phrase title="bdPhoneSupport_data_source_db_table" version_id="1000000" version_string="1.0.0"><![CDATA[Table Name]]></phrase>
     <phrase title="bdPhoneSupport_data_source_user_field" version_id="1000000" version_string="1.0.0"><![CDATA[User Field]]></phrase>
     <phrase title="bdPhoneSupport_data_source_user_field_id" version_id="1000000" version_string="1.0.0"><![CDATA[User Field ID]]></phrase>
+    <phrase title="bdPhoneSupport_enter_verify_code" version_id="1000000" version_string="1.0.0"><![CDATA[Enter Code]]></phrase>
     <phrase title="bdPhoneSupport_error_cannot_send_code_exception" version_id="1000000" version_string="1.0.0"><![CDATA[We cannot send code to your phone right now due to a technical difficulty, please try again later. If this is the second time you have received this message, please contact our staff for assistance.]]></phrase>
     <phrase title="bdPhoneSupport_error_cannot_send_code_too_many_attempts_today_x_of_y" version_id="1000000" version_string="1.0.0"><![CDATA[Sorry, we cannot send code to your phone right now because you have requested verification too many times today ({usage}). Your daily limit is {limit}, please try again later.]]></phrase>
     <phrase title="bdPhoneSupport_error_cannot_send_code_too_many_attempts_x_of_y" version_id="1000000" version_string="1.0.0"><![CDATA[Sorry, we cannot send code to your phone because you have requested verification too many times ({usage}). Your account limit is {limit}.]]></phrase>
@@ -157,10 +165,12 @@ step=300</edit_format_params>
     <phrase title="bdPhoneSupport_error_data_source_user_field_id_not_found" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified user field ID ({user_field_id}) cannot be found.]]></phrase>
     <phrase title="bdPhoneSupport_number_not_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has not been verified.]]></phrase>
     <phrase title="bdPhoneSupport_number_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has been verified.]]></phrase>
+    <phrase title="bdPhoneSupport_please_enter_code_to_verify_phone" version_id="1000000" version_string="1.0.0"><![CDATA[Please enter the verification code that has been sent to your phone ({phone_number}) to verify it.]]></phrase>
     <phrase title="bdPhoneSupport_primary_phone_number" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Number]]></phrase>
     <phrase title="bdPhoneSupport_request_verification_code" version_id="1000000" version_string="1.0.0"><![CDATA[Request Verification Code]]></phrase>
     <phrase title="bdPhoneSupport_request_verification_code_explain" version_id="1000000" version_string="1.0.0"><![CDATA[You may request the verification to be sent again if you haven't received it after a while.]]></phrase>
     <phrase title="bdPhoneSupport_sent_code_phone_x" version_id="1000000" version_string="1.0.0"><![CDATA[Verification code has been sent to your phone ({phone_number}).]]></phrase>
+    <phrase title="bdPhoneSupport_showPrimaryVerifyNotice" version_id="1000000" version_string="1.0.0"><![CDATA[Verify Phone]]></phrase>
     <phrase title="bdPhoneSupport_sms_hi_x_verify_y_code_x" version_id="1000000" version_string="1.0.0"><![CDATA[Hi {username}, please enter {code_text} to verify your phone number ({phone_number}) on {board_title}.]]></phrase>
     <phrase title="bdPhoneSupport_twilio_account_sid" version_id="1000000" version_string="1.0.0"><![CDATA[Account SID]]></phrase>
     <phrase title="bdPhoneSupport_twilio_auth_token" version_id="1000000" version_string="1.0.0"><![CDATA[Auth Token]]></phrase>
@@ -184,6 +194,8 @@ step=300</edit_format_params>
     <phrase title="option_bdPhoneSupport_primaryDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for user primary phone number.]]></phrase>
     <phrase title="option_bdPhoneSupport_primaryVerifiedDataSource" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Verified]]></phrase>
     <phrase title="option_bdPhoneSupport_primaryVerifiedDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for verified status of user primary phone. If no data source is provided, no verification will take place when the phone number is changed.]]></phrase>
+    <phrase title="option_bdPhoneSupport_primaryVerifyNotice" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Verify Notice]]></phrase>
+    <phrase title="option_bdPhoneSupport_primaryVerifyNotice_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Enable this option to show a notice to users who have entered primary phone number but haven't verified it.]]></phrase>
     <phrase title="option_bdPhoneSupport_someVerifiedDataSource" version_id="1000000" version_string="1.0.0"><![CDATA[Some Phone Verified]]></phrase>
     <phrase title="option_bdPhoneSupport_someVerifiedDataSource_explain" version_id="1000000" version_string="1.0.0"><![CDATA[Choose the data source for verified status of any of user phones. This is slightly different from "Primary Phone Verified" that it will not be reset when user changes his/her number.]]></phrase>
     <phrase title="option_bdPhoneSupport_twilio" version_id="1000000" version_string="1.0.0"><![CDATA[Twilio]]></phrase>
@@ -251,7 +263,13 @@ step=300</edit_format_params>
 
 	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 	<input type="hidden" name="_xfConfirm" value="1" />
+	<input type="hidden" name="from" value="{$from}" />
 </form>]]></template>
+    <template title="bdPhoneSupport_notice_verify_primary" version_id="1000000" version_string="1.0.0"><![CDATA[<xen:set var="$phoneNumber"><xen:callback class="bdPhoneSupport_Integration"
+	method="getUserPhoneNumber">primary</xen:callback></xen:set>
+{xen:phrase bdPhoneSupport_please_enter_code_to_verify_phone,
+	'phone_number={$phoneNumber}'}
+<a href="{xen:link account/phones, '', 'from=notice'}" class="OverlayTrigger">{xen:phrase bdPhoneSupport_enter_verify_code}</a>]]></template>
   </templates>
   <public_template_modifications/>
   <bb_code_media_sites/>

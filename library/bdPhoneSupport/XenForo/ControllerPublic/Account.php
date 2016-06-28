@@ -6,6 +6,8 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
     {
         $primaryPhoneNumber = bdPhoneSupport_Integration::getUserPhoneNumber();
         $primaryVerified = bdPhoneSupport_Integration::getUserVerified();
+        $from = $this->_input->filterSingle('from', XenForo_Input::STRING);
+        $noRedirect = ($from === 'notice');
 
         if ($this->isConfirmedPost()) {
             $input = $this->_input->filter(array(
@@ -19,7 +21,8 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
             ) {
                 bdPhoneSupport_Integration::setUserPhoneNumber('primary',
                     XenForo_Visitor::getUserId(), $input['primary']);
-                return $this->responseRedirect(
+                return $this->_bdPhoneSupport_responseRedirect(
+                    $noRedirect,
                     XenForo_ControllerResponse_Redirect::RESOURCE_UPDATED,
                     XenForo_Link::buildPublicLink('account/phones'),
                     new XenForo_Phrase('bdPhoneSupport_your_primary_phone_number_updated')
@@ -33,7 +36,8 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
                 if (bdPhoneSupport_Integration::verifyUserPhone('primary',
                     XenForo_Visitor::getUserId(), $input['primary_verify'])
                 ) {
-                    return $this->responseRedirect(
+                    return $this->_bdPhoneSupport_responseRedirect(
+                        $noRedirect,
                         XenForo_ControllerResponse_Redirect::RESOURCE_UPDATED,
                         XenForo_Link::buildPublicLink('account/phones'),
                         new XenForo_Phrase('bdPhoneSupport_your_primary_phone_number_verified')
@@ -55,15 +59,19 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
                 }
             }
 
-            return $this->responseRedirect(
+            return $this->_bdPhoneSupport_responseRedirect(
+                $noRedirect,
                 XenForo_ControllerResponse_Redirect::SUCCESS,
-                XenForo_Link::buildPublicLink('account/phones')
+                XenForo_Link::buildPublicLink('account/phones'),
+                null
             );
         }
 
         $viewParams = array(
             'primaryPhoneNumber' => $primaryPhoneNumber,
             'primaryVerified' => $primaryVerified,
+
+            'from' => $from,
         );
 
         return $this->_getWrapper('bdPhoneSupport_Phones', 'account/phones', $this->responseView(
@@ -71,5 +79,14 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
             'bdPhoneSupport_account_phones',
             $viewParams
         ));
+    }
+
+    protected function _bdPhoneSupport_responseRedirect($noRedirect, $type, $target, $message)
+    {
+        if ($noRedirect) {
+            return $this->responseMessage($message);
+        }
+
+        return $this->responseRedirect($type, $target, $message);
     }
 }
