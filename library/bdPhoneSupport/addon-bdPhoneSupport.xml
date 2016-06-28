@@ -164,6 +164,7 @@ step=300</edit_format_params>
     <phrase title="bdPhoneSupport_error_data_source_user_field_id_missing" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: User Field ID is required.]]></phrase>
     <phrase title="bdPhoneSupport_error_data_source_user_field_id_not_found" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified user field ID ({user_field_id}) cannot be found.]]></phrase>
     <phrase title="bdPhoneSupport_error_phone_number_x_invalid" version_id="1000000" version_string="1.0.0"><![CDATA[{phone_number} cannot be recognized as a valid phone number.]]></phrase>
+    <phrase title="bdPhoneSupport_notice_verify_primary" version_id="1000000" version_string="1.0.0"><![CDATA[Verify Phone]]></phrase>
     <phrase title="bdPhoneSupport_number_not_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has not been verified.]]></phrase>
     <phrase title="bdPhoneSupport_number_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has been verified.]]></phrase>
     <phrase title="bdPhoneSupport_please_enter_code_to_verify_phone" version_id="1000000" version_string="1.0.0"><![CDATA[Please enter the verification code that has been sent to your phone ({phone_number}) to verify it.]]></phrase>
@@ -171,7 +172,6 @@ step=300</edit_format_params>
     <phrase title="bdPhoneSupport_request_verification_code" version_id="1000000" version_string="1.0.0"><![CDATA[Request Verification Code]]></phrase>
     <phrase title="bdPhoneSupport_request_verification_code_explain" version_id="1000000" version_string="1.0.0"><![CDATA[You may request the verification to be sent again if you haven't received it after a while.]]></phrase>
     <phrase title="bdPhoneSupport_sent_code_phone_x" version_id="1000000" version_string="1.0.0"><![CDATA[Verification code has been sent to your phone ({phone_number}).]]></phrase>
-    <phrase title="bdPhoneSupport_showPrimaryVerifyNotice" version_id="1000000" version_string="1.0.0"><![CDATA[Verify Phone]]></phrase>
     <phrase title="bdPhoneSupport_sms_hi_x_verify_y_code_x" version_id="1000000" version_string="1.0.0"><![CDATA[Hi {username}, please enter {code_text} to verify your phone number ({phone_number}) on {board_title}.]]></phrase>
     <phrase title="bdPhoneSupport_twilio_account_sid" version_id="1000000" version_string="1.0.0"><![CDATA[Account SID]]></phrase>
     <phrase title="bdPhoneSupport_twilio_auth_token" version_id="1000000" version_string="1.0.0"><![CDATA[Auth Token]]></phrase>
