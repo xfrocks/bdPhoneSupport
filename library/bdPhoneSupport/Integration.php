@@ -124,7 +124,27 @@ class bdPhoneSupport_Integration
             return;
         }
 
-        // new XenForo_Phrase('bdPhoneSupport_showPrimaryVerifyNotice')
+        /**
+         * These checks are optional, the real checks are done in
+         * @see bdPhoneSupport_Model_Verification::requestVerify
+         *
+         * We still perform checks here to avoid user confusion when
+         * they see the notice but can't verify their phone...
+         */
+        $visitor = XenForo_Visitor::getInstance();
+        if ($visitor['user_state'] !== 'valid') {
+            return;
+        }
+        $codeMax = $visitor->hasPermission('general', 'bdPhoneSupport_codeMax');
+        if ($codeMax === 0) {
+            return;
+        }
+        $codePerDay = $visitor->hasPermission('general', 'bdPhoneSupport_codePerDay');
+        if ($codePerDay === 0) {
+            return;
+        }
+
+        // new XenForo_Phrase('bdPhoneSupport_notice_verify_primary')
         $paramKey = 'bdPhoneSupport_showPrimaryVerifyNotice';
         $containerParams[$paramKey] = true;
         $dependencies->notices[$paramKey] = 'bdPhoneSupport_notice_verify_primary';

@@ -12,8 +12,22 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
     {
         $this->standardizeViewingUserReference($viewingUser);
 
+        /**
+         * Please consider updating
+         * @see bdPhoneSupport_Integration::showPrimaryVerifyNotice
+         * if the below checks are changed / updated for best UX
+         */
+        if ($viewingUser['user_state'] !== 'valid') {
+            $errorPhraseKey = new XenForo_Phrase('bdPhoneSupport_error_cannot_send_code_invalid_account');
+            return false;
+        }
+
         $codeMax = XenForo_Permission::hasPermission($viewingUser['permissions'],
             'general', 'bdPhoneSupport_codeMax');
+        if ($codeMax === 0) {
+            $errorPhraseKey = new XenForo_Phrase('bdPhoneSupport_error_cannot_send_code_invalid_account');
+            return false;
+        }
         if ($codeMax > -1) {
             $codeCount = $this->_getDb()->fetchOne('
                 SELECT COUNT(*)
@@ -33,6 +47,10 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
 
         $codePerDay = XenForo_Permission::hasPermission($viewingUser['permissions'],
             'general', 'bdPhoneSupport_codePerDay');
+        if ($codePerDay === 0) {
+            $errorPhraseKey = new XenForo_Phrase('bdPhoneSupport_error_cannot_send_code_invalid_account');
+            return false;
+        }
         if ($codePerDay > -1) {
             $codeDayCount = $this->_getDb()->fetchOne('
                 SELECT COUNT(*)
