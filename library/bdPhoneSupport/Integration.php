@@ -163,12 +163,18 @@ class bdPhoneSupport_Integration
                 $verified = self::getUserVerified($type, $user);
                 if ($verified === true) {
                     $returnValue = true;
+                } elseif ($verified === null) {
+                    // no verified data source, check for entered phone number instead
+                    return self::criteriaUser($type, array('status' => 'entered'), $user, $returnValue);
                 }
                 break;
             case 'verified_once':
                 $verified = self::getUserVerified('some', $user);
                 if ($verified === true) {
                     $returnValue = true;
+                } elseif ($verified === null) {
+                    // no some-verified data source, check for entered phone number instead
+                    return self::criteriaUser($type, array('status' => 'entered'), $user, $returnValue);
                 }
                 break;
         }
