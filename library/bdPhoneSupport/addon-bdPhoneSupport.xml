@@ -4,6 +4,30 @@
   <admin_permissions/>
   <admin_style_properties/>
   <admin_templates>
+    <template title="bdPhoneSupport_helper_criteria_user"><![CDATA[<xen:set var="$hasPrimary"><xen:callback class="bdPhoneSupport_Option"
+	method="get" params="{xen:array '0=type'}">primaryDataSource</xen:callback></xen:set>
+<xen:set var="$hasPrimaryVerified"><xen:callback class="bdPhoneSupport_Option"
+	method="get" params="{xen:array '0=type'}">primaryVerifiedDataSource</xen:callback></xen:set>
+<xen:set var="$hasSomeVerified"><xen:callback class="bdPhoneSupport_Option"
+	method="get" params="{xen:array '0=type'}">someVerifiedDataSource</xen:callback></xen:set>
+
+<xen:if is="{$hasPrimary}">
+<li>
+	<label>
+		<input type="checkbox" name="user_criteria[bdPhoneSupport_primary][rule]" value="bdPhoneSupport_primary" class="Disabler" id="ucrit_bdPhoneSupport_primary" {xen:checked $userCriteria.bdPhoneSupport_primary} />
+		{xen:phrase bdPhoneSupport_primary_has_been}:
+	</label>
+	<div class="criteriaQualifier" id="ucrit_bdPhoneSupport_primary_Disabler">
+		<xen:select name="user_criteria[bdPhoneSupport_primary][data][status]" value="{$userCriteria.bdPhoneSupport_primary.status}" inputclass="autoSize">
+			<xen:option value="entered">{xen:phrase bdPhoneSupport_status_entered}</xen:option>
+			<xen:option value="verified" displayif="{$hasPrimaryVerified}">{xen:phrase bdPhoneSupport_status_verified}</xen:option>
+			<xen:option value="verified_once" displayif="{$hasSomeVerified}">{xen:phrase bdPhoneSupport_status_verified_once}</xen:option>
+		</xen:select>
+	</div>
+</li>
+</xen:if>
+
+<xen:edithint template="helper_criteria_user" />]]></template>
     <template title="bdPhoneSupport_option_template_data_source"><![CDATA[<xen:radiounit label="{$preparedOption.title}"
 			   explain="{xen:raw $preparedOption.explain}"
 			   name="{$fieldPrefix}[{$preparedOption.option_id}][type]"
@@ -61,10 +85,20 @@
 
 </xen:controlunit>]]></template>
   </admin_templates>
-  <admin_template_modifications/>
+  <admin_template_modifications>
+    <modification template="helper_criteria_user" modification_key="bdPhoneSupport_helper_criteria_user" description="Render additional criteria fields." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<!-- slot: user_state -->.+?)(</xen:hook>)#s]]></find>
+      <replace><![CDATA[$1
+
+<xen:include template="bdPhoneSupport_helper_criteria_user" />
+
+$2]]></replace>
+    </modification>
+  </admin_template_modifications>
   <code_events/>
   <code_event_listeners>
     <listener event_id="container_public_params" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="container_public_params" active="1" hint="" description=""/>
+    <listener event_id="criteria_user" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="criteria_user" active="1" hint="" description=""/>
     <listener event_id="file_health_check" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="file_health_check" active="1" hint="" description=""/>
     <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerPublic_Account" active="1" hint="XenForo_ControllerPublic_Account" description="XenForo_ControllerPublic_Account"/>
     <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerPublic_Misc" active="1" hint="XenForo_ControllerPublic_Misc" description="XenForo_ControllerPublic_Misc"/>
@@ -169,11 +203,15 @@ step=300</edit_format_params>
     <phrase title="bdPhoneSupport_number_not_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has not been verified.]]></phrase>
     <phrase title="bdPhoneSupport_number_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has been verified.]]></phrase>
     <phrase title="bdPhoneSupport_please_enter_code_to_verify_phone" version_id="1000000" version_string="1.0.0"><![CDATA[Please enter the verification code that has been sent to your phone ({phone_number}) to verify it.]]></phrase>
+    <phrase title="bdPhoneSupport_primary_has_been" version_id="1000000" version_string="1.0.0"><![CDATA[Primary phone has been]]></phrase>
     <phrase title="bdPhoneSupport_primary_phone_number" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Number]]></phrase>
     <phrase title="bdPhoneSupport_request_verification_code" version_id="1000000" version_string="1.0.0"><![CDATA[Request Verification Code]]></phrase>
     <phrase title="bdPhoneSupport_request_verification_code_explain" version_id="1000000" version_string="1.0.0"><![CDATA[You may request the verification to be sent again if you haven't received it after a while.]]></phrase>
     <phrase title="bdPhoneSupport_sent_code_phone_x" version_id="1000000" version_string="1.0.0"><![CDATA[Verification code has been sent to your phone ({phone_number}).]]></phrase>
     <phrase title="bdPhoneSupport_sms_hi_x_verify_y_code_x" version_id="1000000" version_string="1.0.0"><![CDATA[Hi {username}, please enter {code_text} to verify your phone number ({phone_number}) on {board_title}.]]></phrase>
+    <phrase title="bdPhoneSupport_status_entered" version_id="1000000" version_string="1.0.0"><![CDATA[Entered]]></phrase>
+    <phrase title="bdPhoneSupport_status_verified" version_id="1000000" version_string="1.0.0"><![CDATA[Verified]]></phrase>
+    <phrase title="bdPhoneSupport_status_verified_once" version_id="1000000" version_string="1.0.0"><![CDATA[Verified at least once]]></phrase>
     <phrase title="bdPhoneSupport_twilio_account_sid" version_id="1000000" version_string="1.0.0"><![CDATA[Account SID]]></phrase>
     <phrase title="bdPhoneSupport_twilio_auth_token" version_id="1000000" version_string="1.0.0"><![CDATA[Auth Token]]></phrase>
     <phrase title="bdPhoneSupport_twilio_messaging_service" version_id="1000000" version_string="1.0.0"><![CDATA[Send messages via a messaging service]]></phrase>

@@ -2,6 +2,15 @@
 
 class bdPhoneSupport_Listener
 {
+    public static function criteria_user($rule, array $data, array $user, &$returnValue)
+    {
+        switch ($rule) {
+            case 'bdPhoneSupport_primary':
+                bdPhoneSupport_Integration::criteriaUser('primary', $data, $user, $returnValue);
+                break;
+        }
+    }
+
     public static function container_public_params(array &$params, XenForo_Dependencies_Abstract $dependencies)
     {
         /** @noinspection PhpParamsInspection */

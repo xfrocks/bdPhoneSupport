@@ -149,4 +149,28 @@ class bdPhoneSupport_Integration
         $containerParams[$paramKey] = true;
         $dependencies->notices[$paramKey] = 'bdPhoneSupport_notice_verify_primary';
     }
+
+    public static function criteriaUser($type, array $data, array $user, &$returnValue)
+    {
+        switch ($data['status']) {
+            case 'entered':
+                $phoneNumber = self::getUserPhoneNumber($type, $user);
+                if (!empty($phoneNumber)) {
+                    $returnValue = true;
+                }
+                break;
+            case 'verified':
+                $verified = self::getUserVerified($type, $user);
+                if ($verified === true) {
+                    $returnValue = true;
+                }
+                break;
+            case 'verified_once':
+                $verified = self::getUserVerified('some', $user);
+                if ($verified === true) {
+                    $returnValue = true;
+                }
+                break;
+        }
+    }
 }
