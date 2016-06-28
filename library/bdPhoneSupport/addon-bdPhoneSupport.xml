@@ -163,6 +163,7 @@ step=300</edit_format_params>
     <phrase title="bdPhoneSupport_error_data_source_user_field_id_invalid" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified user field ID ({user_field_id}) is invalid.]]></phrase>
     <phrase title="bdPhoneSupport_error_data_source_user_field_id_missing" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: User Field ID is required.]]></phrase>
     <phrase title="bdPhoneSupport_error_data_source_user_field_id_not_found" version_id="1000000" version_string="1.0.0"><![CDATA[{field_name}: The specified user field ID ({user_field_id}) cannot be found.]]></phrase>
+    <phrase title="bdPhoneSupport_error_phone_number_x_invalid" version_id="1000000" version_string="1.0.0"><![CDATA[{phone_number} cannot be recognized as a valid phone number.]]></phrase>
     <phrase title="bdPhoneSupport_number_not_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has not been verified.]]></phrase>
     <phrase title="bdPhoneSupport_number_verified" version_id="1000000" version_string="1.0.0"><![CDATA[This number has been verified.]]></phrase>
     <phrase title="bdPhoneSupport_please_enter_code_to_verify_phone" version_id="1000000" version_string="1.0.0"><![CDATA[Please enter the verification code that has been sent to your phone ({phone_number}) to verify it.]]></phrase>

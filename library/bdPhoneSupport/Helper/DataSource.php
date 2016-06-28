@@ -5,6 +5,11 @@ class bdPhoneSupport_Helper_DataSource
     const OPTION_KEY_PHONE_NUMBER = '%1$sDataSource';
     const OPTION_KEY_VERIFIED = '%1$sVerifiedDataSource';
 
+    const DATA_PHONE_NUMBER_MAX_LENGTH = 16;
+    const DATA_PHONE_NUMBER_REGEX = '^\+?\d{6,15}$';
+    const DATA_VERIFIED_YES = '1';
+    const DATA_VERIFIED_NO = '0';
+
     public static function setUserValue($type, $optionKeyFormat, $userIdOrArray, $value)
     {
         $dataSource = bdPhoneSupport_Option::get(self::_buildOptionKey($type, $optionKeyFormat));
@@ -23,12 +28,12 @@ class bdPhoneSupport_Helper_DataSource
         self::setUserValueDw($userDw, $optionKeyFormat, $dataSource, $value);
 
         if ($optionKeyFormat === self::OPTION_KEY_VERIFIED
-            && $value > 0
+            && $value === self::DATA_VERIFIED_YES
             && $type !== 'some'
         ) {
             $someDataSource = bdPhoneSupport_Option::get(self::_buildOptionKey('some', $optionKeyFormat));
             if (!empty($someDataSource['type'])) {
-                self::setUserValueDw($userDw, $optionKeyFormat, $someDataSource, 1);
+                self::setUserValueDw($userDw, $optionKeyFormat, $someDataSource, self::DATA_VERIFIED_YES);
             }
         }
 
@@ -108,8 +113,40 @@ class bdPhoneSupport_Helper_DataSource
             && isset($fields[$dataSource['dbTable']])
             && !isset($fields[$dataSource['dbTable']][$dataSource['dbColumn']])
         ) {
-            $fields[$dataSource['dbTable']][$dataSource['dbColumn']] = array('type' => XenForo_DataWriter::TYPE_STRING);
+            $fieldDefinition = array('type' => XenForo_DataWriter::TYPE_STRING);
+
+            switch ($optionKeyFormat) {
+                case self::OPTION_KEY_PHONE_NUMBER:
+                    $fieldDefinition['default'] = '';
+                    $fieldDefinition['maxLength'] = self::DATA_PHONE_NUMBER_MAX_LENGTH;
+                    $fieldDefinition['verification'] = array(__CLASS__, 'prepareUserFields_phoneNumberVerification');
+                    break;
+                case self::OPTION_KEY_VERIFIED:
+                    $fieldDefinition['default'] = self::DATA_VERIFIED_NO;
+                    $fieldDefinition['allowedValues'] = array(self::DATA_VERIFIED_YES, self::DATA_VERIFIED_NO);
+                    break;
+            }
+
+            $fields[$dataSource['dbTable']][$dataSource['dbColumn']] = $fieldDefinition;
         }
+    }
+
+    public static function prepareUserFields_phoneNumberVerification(
+        &$phoneNumber,
+        XenForo_DataWriter $dw,
+        $fieldName
+    ) {
+        if (empty($phoneNumber)) {
+            return true;
+        }
+
+        if (!preg_match(sprintf('#%s#', self::DATA_PHONE_NUMBER_REGEX), $phoneNumber)) {
+            $dw->error(new XenForo_Phrase('bdPhoneSupport_error_phone_number_x_invalid', array(
+                'phone_number' => $phoneNumber
+            )), $fieldName);
+        }
+
+        return true;
     }
 
     public static function validateOption(array &$dataSource, XenForo_DataWriter $dw, $fieldName)
@@ -122,13 +159,13 @@ class bdPhoneSupport_Helper_DataSource
             case 'bdPhoneSupport_primaryDataSource';
                 // https://www.itu.int/rec/T-REC-E.164/en
                 $config = array(
-                    'dbColumnSchema' => 'VARCHAR(16) NOT NULL DEFAULT \'\'',
+                    'dbColumnSchema' => 'VARCHAR(' . self::DATA_PHONE_NUMBER_MAX_LENGTH . ') NOT NULL DEFAULT \'\'',
                     'userFieldBulkSet' => array(
                         'display_group' => 'contact',
                         'field_type' => 'textbox',
                         'match_type' => 'regex',
-                        'match_regex' => '^\+?\d{6,15}$',
-                        'max_length' => 16
+                        'match_regex' => self::DATA_PHONE_NUMBER_REGEX,
+                        'max_length' => self::DATA_PHONE_NUMBER_MAX_LENGTH
                     )
                 );
                 break;
@@ -142,8 +179,8 @@ class bdPhoneSupport_Helper_DataSource
                         'user_editable' => 'never'
                     ),
                     'userFieldChoices' => array(
-                        1 => new XenForo_Phrase('yes'),
-                        0 => new XenForo_Phrase('no')
+                        self::DATA_VERIFIED_YES => new XenForo_Phrase('yes'),
+                        self::DATA_VERIFIED_NO => new XenForo_Phrase('no')
                     )
                 );
                 break;

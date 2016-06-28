@@ -39,8 +39,11 @@ class bdPhoneSupport_Integration
             }
         }
 
-        if (!bdPhoneSupport_Helper_DataSource::setUserValue($type,
-            bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED, $user, 1)
+        if (!bdPhoneSupport_Helper_DataSource::setUserValue(
+            $type,
+            bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED,
+            $user,
+            bdPhoneSupport_Helper_DataSource::DATA_VERIFIED_YES)
         ) {
             return false;
         }
@@ -81,7 +84,7 @@ class bdPhoneSupport_Integration
             return null;
         }
 
-        return strval($verified) === '1';
+        return strval($verified) === bdPhoneSupport_Helper_DataSource::DATA_VERIFIED_YES;
     }
 
     public static function updateUserPhones(array $user = array())
