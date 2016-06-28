@@ -11,7 +11,7 @@ class bdPhoneSupport_Model_Sms extends XenForo_Model
         XenForo_Helper_File::log(__CLASS__, sprintf('%s($phoneNumber=%s, $text=%s)',
             __METHOD__, $phoneNumber, $text));
 
-        return $this->_twilio_send($phoneNumber, $text);
+        return $this->_send($phoneNumber, $text);
     }
 
     public function log(array $bulkSet)
@@ -23,9 +23,19 @@ class bdPhoneSupport_Model_Sms extends XenForo_Model
         $this->_getDb()->insert('xf_bdphonesupport_log', $bulkSet);
     }
 
-    protected function _twilio_send($phoneNumber, $text)
+    protected function _send($phoneNumber, $text)
+    {
+        $config = bdPhoneSupport_Option::get('twilio');
+        if (!empty($config)) {
+            return $this->_twilioSend($config, $phoneNumber, $text);
+        }
+
+        return false;
+    }
+
+    protected function _twilioSend(array $config, $phoneNumber, $text)
     {
         return bdPhoneSupport_Helper_Provider_Twilio::postMessage(
-            bdPhoneSupport_Option::get('twilio'), $phoneNumber, $text);
+            $config, $phoneNumber, $text);
     }
 }
