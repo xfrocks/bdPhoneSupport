@@ -92,6 +92,8 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
 
     public function verifyCode($userId, $phoneNumber, $codeText)
     {
+        $codeText = $this->_cleanCodeText($codeText);
+
         $code = $this->_getDb()->fetchRow('
             SELECT *
             FROM `xf_bdphonesupport_code`
@@ -143,6 +145,7 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
     protected function _sendVerificationCode($userId, $phoneNumber, $userName)
     {
         $codeText = $this->_generateCodeTextForUserAndPhoneNumber($userId, $phoneNumber);
+        $codeWithSpaces = trim(preg_replace('#[^ ]{3}#', '$0 ', $codeText));
         $codeData = array(
             'generateBacktrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
             'generateSessionData' => XenForo_Application::getSession()->getAll()
@@ -157,6 +160,7 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
                     'username' => $userName,
                     'phone_number' => bdPhoneSupport_Helper_PhoneNumber::standardize($phoneNumber),
                     'code_text' => $codeText,
+                    'code_with_spaces' => $codeWithSpaces,
                     'board_title' => XenForo_Application::getOptions()->get('boardTitle')
                 )
             )
@@ -214,5 +218,14 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
     protected function _generateCodeText()
     {
         return strval(rand(100000, 999999));
+    }
+
+    /**
+     * @param string $codeText
+     * @return string
+     */
+    protected function _cleanCodeText($codeText)
+    {
+        return preg_replace('#[^0-9]#', '', $codeText);
     }
 }
