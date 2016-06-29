@@ -10,7 +10,7 @@ class bdPhoneSupport_Integration
         );
     }
 
-    public static function verifyUserPhone($type, $userId, $codeText)
+    public static function verifyUserPhone($type, $userId, $codeText = '', &$errorPhraseKey = null)
     {
         /** @var bdPhoneSupport_Model_Verification $verificationModel */
         $verificationModel = XenForo_Model::create('bdPhoneSupport_Model_Verification');
@@ -27,7 +27,10 @@ class bdPhoneSupport_Integration
         }
 
         $phoneNumber = self::getUserPhoneNumber($type, $user);
-        if (!$verificationModel->verifyCode($user['user_id'], $phoneNumber, $codeText)) {
+
+        if ($codeText !== ''
+            && !$verificationModel->verifyCode($user['user_id'], $phoneNumber, $codeText, $errorPhraseKey)
+        ) {
             return false;
         }
 
@@ -35,6 +38,8 @@ class bdPhoneSupport_Integration
             /** @var bdPhoneSupport_Model_UserPhone $userPhoneModel */
             $userPhoneModel = $verificationModel->getModelFromCache('bdPhoneSupport_Model_UserPhone');
             if ($userPhoneModel->getUsersByPhoneNumber($phoneNumber, $user['user_id'])) {
+                // new XenForo_Phrase('bdPhoneSupport_error_cannot_verify_someone_else')
+                $errorPhraseKey = 'bdPhoneSupport_error_cannot_verify_someone_else';
                 return false;
             }
         }

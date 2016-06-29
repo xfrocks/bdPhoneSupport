@@ -90,7 +90,7 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
         }
     }
 
-    public function verifyCode($userId, $phoneNumber, $codeText)
+    public function verifyCode($userId, $phoneNumber, $codeText, &$errorPhraseKey = null)
     {
         $codeText = $this->_cleanCodeText($codeText);
 
@@ -118,6 +118,8 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
                 'generate_date' => 0,
                 'verify_date' => XenForo_Application::$time
             ));
+            // new XenForo_Phrase('bdPhoneSupport_error_cannot_verify_code_not_found')
+            $errorPhraseKey = 'bdPhoneSupport_error_cannot_verify_code_not_found';
             return false;
         }
 

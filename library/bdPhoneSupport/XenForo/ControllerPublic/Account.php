@@ -34,7 +34,7 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
                     bdPhoneSupport_Option::get('codeFloodSeconds'));
 
                 if (bdPhoneSupport_Integration::verifyUserPhone('primary',
-                    XenForo_Visitor::getUserId(), $input['primary_verify'])
+                    XenForo_Visitor::getUserId(), $input['primary_verify'], $errorPhraseKey)
                 ) {
                     return $this->_bdPhoneSupport_responseRedirect(
                         $noRedirect,
@@ -42,6 +42,8 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
                         XenForo_Link::buildPublicLink('account/phones'),
                         new XenForo_Phrase('bdPhoneSupport_your_primary_phone_number_verified')
                     );
+                } elseif (!empty($errorPhraseKey)) {
+                    throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
                 } else {
                     return $this->responseError(new XenForo_Phrase('bdPhoneSupport_error_cannot_verify'));
                 }
