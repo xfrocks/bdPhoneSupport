@@ -28,7 +28,7 @@ class bdPhoneSupport_Model_UserPhone extends XenForo_Model
         return $this->_getDb()->lastInsertId();
     }
 
-    public function updateUserPhones($userId, $phoneNumbers)
+    public function updateUserPhones($userId, array $phoneNumbers)
     {
         $userPhones = $this->_getDb()->fetchAll('
             SELECT *

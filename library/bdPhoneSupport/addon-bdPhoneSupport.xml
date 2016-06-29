@@ -84,6 +84,15 @@
 	</xen:html>
 
 </xen:controlunit>]]></template>
+    <template title="bdPhoneSupport_tools_rebuild"><![CDATA[<xen:form action="{xen:adminlink tools/trigger-deferred}">
+	<h2 class="subHeading">{xen:phrase bdPhoneSupport_rebuild_user_phone_mappings}</h2>
+	<xen:spinboxunit name="options[batch]" value="500" step="100" min="1" label="{xen:phrase items_to_process_per_page}:" />
+
+	<xen:submitunit save="{xen:phrase rebuild_now}" />
+	<input type="hidden" name="cache" value="bdPhoneSupport_Deferred_UserPhone" />
+</xen:form>
+
+<xen:edithint template="tools_rebuild" />]]></template>
   </admin_templates>
   <admin_template_modifications>
     <modification template="helper_criteria_user" modification_key="bdPhoneSupport_helper_criteria_user" description="Render additional criteria fields." execution_order="10" enabled="1" action="preg_replace">
@@ -93,6 +102,12 @@
 <xen:include template="bdPhoneSupport_helper_criteria_user" />
 
 $2]]></replace>
+    </modification>
+    <modification template="tools_rebuild" modification_key="bdPhoneSupport_tools_rebuild" description="Render rebuild forms." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#\A.+\z#s]]></find>
+      <replace><![CDATA[$0
+
+<xen:include template="bdPhoneSupport_tools_rebuild" />]]></replace>
     </modification>
   </admin_template_modifications>
   <code_events/>
@@ -205,6 +220,7 @@ step=300</edit_format_params>
     <phrase title="bdPhoneSupport_please_enter_code_to_verify_phone" version_id="1000000" version_string="1.0.0"><![CDATA[Please enter the verification code that has been sent to your phone ({phone_number}) to verify it.]]></phrase>
     <phrase title="bdPhoneSupport_primary_has_been" version_id="1000000" version_string="1.0.0"><![CDATA[Primary phone has been]]></phrase>
     <phrase title="bdPhoneSupport_primary_phone_number" version_id="1000000" version_string="1.0.0"><![CDATA[Primary Phone Number]]></phrase>
+    <phrase title="bdPhoneSupport_rebuild_user_phone_mappings" version_id="1010002" version_string="1.1.0"><![CDATA[Rebuild User Phone Mappings]]></phrase>
     <phrase title="bdPhoneSupport_request_verification_code" version_id="1000000" version_string="1.0.0"><![CDATA[Request Verification Code]]></phrase>
     <phrase title="bdPhoneSupport_request_verification_code_explain" version_id="1000000" version_string="1.0.0"><![CDATA[You may request the verification to be sent again if you haven't received it after a while.]]></phrase>
     <phrase title="bdPhoneSupport_sent_code_phone_x" version_id="1000000" version_string="1.0.0"><![CDATA[Verification code has been sent to your phone ({phone_number}).]]></phrase>
