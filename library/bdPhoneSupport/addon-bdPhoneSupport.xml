@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="bdPhoneSupport" title="[bd] Phone Support" version_string="1.1.0" version_id="1010001" url="" install_callback_class="bdPhoneSupport_Installer" install_callback_method="install" uninstall_callback_class="bdPhoneSupport_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="bdPhoneSupport" title="[bd] Phone Support" version_string="1.1.0" version_id="1010002" url="" install_callback_class="bdPhoneSupport_Installer" install_callback_method="install" uninstall_callback_class="bdPhoneSupport_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -208,7 +208,7 @@ step=300</edit_format_params>
     <phrase title="bdPhoneSupport_request_verification_code" version_id="1000000" version_string="1.0.0"><![CDATA[Request Verification Code]]></phrase>
     <phrase title="bdPhoneSupport_request_verification_code_explain" version_id="1000000" version_string="1.0.0"><![CDATA[You may request the verification to be sent again if you haven't received it after a while.]]></phrase>
     <phrase title="bdPhoneSupport_sent_code_phone_x" version_id="1000000" version_string="1.0.0"><![CDATA[Verification code has been sent to your phone ({phone_number}).]]></phrase>
-    <phrase title="bdPhoneSupport_sms_hi_x_verify_y_code_x" version_id="1000000" version_string="1.0.0"><![CDATA[Hi {username}, please enter {code_text} to verify your phone number ({phone_number}) on {board_title}.]]></phrase>
+    <phrase title="bdPhoneSupport_sms_hi_x_verify_y_code_x" version_id="1010001" version_string="1.1.0"><![CDATA[Hi {username_censored}, please enter {code_formatted} to verify your phone number ({phone_number_censored}) on {board_title}.]]></phrase>
     <phrase title="bdPhoneSupport_status_entered" version_id="1000000" version_string="1.0.0"><![CDATA[Entered]]></phrase>
     <phrase title="bdPhoneSupport_status_verified" version_id="1000000" version_string="1.0.0"><![CDATA[Verified]]></phrase>
     <phrase title="bdPhoneSupport_status_verified_once" version_id="1000000" version_string="1.0.0"><![CDATA[Verified at least once]]></phrase>

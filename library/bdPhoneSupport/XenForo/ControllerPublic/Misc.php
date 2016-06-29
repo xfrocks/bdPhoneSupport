@@ -34,7 +34,7 @@ class bdPhoneSupport_XenForo_ControllerPublic_Misc extends XFCP_bdPhoneSupport_X
         $smsModel->log(array(
             'provider_id' => 'twilio_' . $providerId,
             'action' => $action,
-            'log_data' => serialize($_POST)
+            'data' => serialize($_POST)
         ));
 
         die('Okie');

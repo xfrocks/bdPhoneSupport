@@ -63,7 +63,7 @@ class bdPhoneSupport_DevHelper_Config extends DevHelper_Config_Base
                 'provider_id' => array('name' => 'provider_id', 'type' => 'string', 'length' => '255', 'required' => true),
                 'action' => array('name' => 'action', 'type' => 'string', 'length' => '255', 'required' => true),
                 'action_date' => array('name' => 'action_date', 'type' => 'uint', 'required' => true),
-                'log_data' => array('name' => 'data', 'type' => 'serialized'),
+                'data' => array('name' => 'data', 'type' => 'serialized'),
             ),
             'phrases' => array(),
             'title_field' => 'provider_id',

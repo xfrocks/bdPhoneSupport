@@ -145,7 +145,6 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
     protected function _sendVerificationCode($userId, $phoneNumber, $userName)
     {
         $codeText = $this->_generateCodeTextForUserAndPhoneNumber($userId, $phoneNumber);
-        $codeWithSpaces = trim(preg_replace('#[^ ]{3}#', '$0 ', $codeText));
         $codeData = array(
             'generateBacktrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
             'generateSessionData' => XenForo_Application::getSession()->getAll()
@@ -157,10 +156,10 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
         $codeData['smsResult'] = $smsModel->send($phoneNumber,
             new XenForo_Phrase('bdPhoneSupport_sms_hi_x_verify_y_code_x',
                 array(
-                    'username' => $userName,
-                    'phone_number' => bdPhoneSupport_Helper_PhoneNumber::standardize($phoneNumber),
-                    'code_text' => $codeText,
-                    'code_with_spaces' => $codeWithSpaces,
+                    'username_censored' => $this->_censorForSms($userName),
+                    'phone_number_censored' => $this->_censorForSms(
+                        bdPhoneSupport_Helper_PhoneNumber::standardize($phoneNumber)),
+                    'code_formatted' => $this->_formatCodeTextForSms($codeText),
                     'board_title' => XenForo_Application::getOptions()->get('boardTitle')
                 )
             )
@@ -227,5 +226,32 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
     protected function _cleanCodeText($codeText)
     {
         return preg_replace('#[^0-9]#', '', $codeText);
+    }
+
+    /**
+     * @param string $input
+     * @return string
+     */
+    protected function _censorForSms($input)
+    {
+        static $censorLength = 3;
+
+        $censored = $input;
+        if (utf8_strlen($censored) > $censorLength) {
+            $censored = utf8_substr($input, 0, -$censorLength) . str_repeat('x', $censorLength);
+        } else {
+            $censored = str_repeat('x', $censorLength);
+        }
+
+        return $censored;
+    }
+
+    /**
+     * @param string $codeText
+     * @return string
+     */
+    protected function _formatCodeTextForSms($codeText)
+    {
+        return trim(preg_replace('#[^ ]{3}#', '$0 ', $codeText));
     }
 }
