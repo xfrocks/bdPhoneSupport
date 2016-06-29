@@ -9,6 +9,9 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
         $from = $this->_input->filterSingle('from', XenForo_Input::STRING);
         $noRedirect = ($from === 'notice');
 
+        /** @var bdPhoneSupport_Model_Verification $verificationModel */
+        $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
+
         if ($this->isConfirmedPost()) {
             $input = $this->_input->filter(array(
                 'primary' => XenForo_Input::STRING,
@@ -50,8 +53,6 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
             }
 
             foreach ($input['request_verify'] as $requestVerifyPhoneNumber) {
-                /** @var bdPhoneSupport_Model_Verification $verificationModel */
-                $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
                 if ($verificationModel->requestVerify($requestVerifyPhoneNumber, $errorPhraseKey)) {
                     return $this->responseMessage(new XenForo_Phrase('bdPhoneSupport_sent_code_phone_x', array(
                         'phone_number' => $requestVerifyPhoneNumber
@@ -69,9 +70,15 @@ class bdPhoneSupport_XenForo_ControllerPublic_Account extends XFCP_bdPhoneSuppor
             );
         }
 
+        $primaryCodes = array();
+        if ($primaryPhoneNumber && !$primaryVerified) {
+            $primaryCodes = $verificationModel->getVerifiableCodes(XenForo_Visitor::getUserId(), $primaryPhoneNumber);
+        }
+
         $viewParams = array(
             'primaryPhoneNumber' => $primaryPhoneNumber,
             'primaryVerified' => $primaryVerified,
+            'primaryCodes' => $primaryCodes,
 
             'from' => $from,
         );

@@ -94,21 +94,13 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
     {
         $codeText = $this->_cleanCodeText($codeText);
 
-        $code = $this->_getDb()->fetchRow('
-            SELECT *
-            FROM `xf_bdphonesupport_code`
-            WHERE
-                user_id = ?
-                AND phone_number = ?
-                AND code_text = ?
-                AND generate_date > ?
-                AND verify_date = 0
-        ', array(
-            $userId,
-            bdPhoneSupport_Helper_PhoneNumber::standardize($phoneNumber),
-            $codeText,
-            XenForo_Application::$time - bdPhoneSupport_Option::get('codeTtlSeconds')
-        ));
+        $code = null;
+        $verifiableCodes = $this->getVerifiableCodes($userId, $phoneNumber);
+        foreach ($verifiableCodes as $verifiableCode) {
+            if (utf8_strtoupper($verifiableCode['code_text']) === utf8_strtoupper($codeText)) {
+                $code = $verifiableCode;
+            }
+        }
 
         if (empty($code)) {
             $this->_getDb()->insert('xf_bdphonesupport_code', array(
@@ -135,6 +127,25 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
             array('code_id = ?' => $code['code_id']));
 
         return true;
+    }
+
+    public function getVerifiableCodes($userId, $phoneNumber)
+    {
+        $codes = $this->fetchAllKeyed('
+            SELECT *
+            FROM `xf_bdphonesupport_code`
+            WHERE
+                user_id = ?
+                AND phone_number = ?
+                AND generate_date > ?
+                AND verify_date = 0
+        ', 'code_id', array(
+            $userId,
+            bdPhoneSupport_Helper_PhoneNumber::standardize($phoneNumber),
+            XenForo_Application::$time - bdPhoneSupport_Option::get('codeTtlSeconds')
+        ));
+
+        return $codes;
     }
 
     /**

@@ -266,7 +266,7 @@ step=300</edit_format_params>
   <route_prefixes/>
   <style_properties/>
   <templates>
-    <template title="bdPhoneSupport_account_phones" version_id="1000000" version_string="1.0.0"><![CDATA[<xen:title>{xen:phrase bdPhoneSupport_account_phones}</xen:title>
+    <template title="bdPhoneSupport_account_phones" version_id="1020000" version_string="1.2.0"><![CDATA[<xen:title>{xen:phrase bdPhoneSupport_account_phones}</xen:title>
 
 <form action="{xen:link account/phones}" method="post"
 	  class="xenForm formOverlay AutoValidator"
@@ -291,6 +291,7 @@ step=300</edit_format_params>
 	</dl>
 
 	<xen:if is="{$primaryPhoneNumber} && {$primaryVerified} === false">
+	<xen:if is="count({$primaryCodes}) > 0">
 	<dl class="ctrlUnit primary_verify">
 		<dt>{xen:phrase bdPhoneSupport_verification_code}:</dt>
 		<dd>
@@ -298,15 +299,23 @@ step=300</edit_format_params>
 			<p class="explain">{xen:phrase bdPhoneSupport_verification_code_explain}</p>
 		</dd>
 	</dl>
+	</xen:if>
 
 	<dl class="ctrlUnit request_verify--primary">
 		<dt>&nbsp;</dt>
 		<dd>
 			<label>
-				<input type="checkbox" name="request_verify[]" value="{$primaryPhoneNumber}" />
+				<input type="checkbox"
+					   name="request_verify[]"
+					   value="{$primaryPhoneNumber}"
+					   {xen:checked 'count({$primaryCodes}) == 0'} />
 				{xen:phrase bdPhoneSupport_request_verification_code}
 			</label>
-			<p class="explain">{xen:phrase bdPhoneSupport_request_verification_code_explain}</p>
+			<p class="explain">
+				<xen:if is="count({$primaryCodes}) > 0">
+					{xen:phrase bdPhoneSupport_request_verification_code_explain}
+				</xen:if>
+			</p>
 		</dd>
 	</dl>
 	</xen:if>
@@ -323,11 +332,11 @@ step=300</edit_format_params>
 	<input type="hidden" name="_xfConfirm" value="1" />
 	<input type="hidden" name="from" value="{$from}" />
 </form>]]></template>
-    <template title="bdPhoneSupport_notice_verify_primary" version_id="1000000" version_string="1.0.0"><![CDATA[<xen:set var="$phoneNumber"><xen:callback class="bdPhoneSupport_Integration"
+    <template title="bdPhoneSupport_notice_verify_primary" version_id="1020000" version_string="1.2.0"><![CDATA[<xen:set var="$phoneNumber"><xen:callback class="bdPhoneSupport_Integration"
 	method="getUserPhoneNumber">primary</xen:callback></xen:set>
 {xen:phrase bdPhoneSupport_please_enter_code_to_verify_phone,
 	'phone_number={$phoneNumber}'}
-<a href="{xen:link account/phones, '', 'from=notice'}" class="OverlayTrigger">{xen:phrase bdPhoneSupport_enter_verify_code}</a>]]></template>
+<a href="{xen:link account/phones, '', 'from=notice'}" class="OverlayTrigger" data-cacheoverlay="no">{xen:phrase bdPhoneSupport_enter_verify_code}</a>]]></template>
   </templates>
   <public_template_modifications/>
   <bb_code_media_sites/>
