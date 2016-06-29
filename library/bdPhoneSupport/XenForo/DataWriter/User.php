@@ -35,7 +35,24 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
 
         if ($this->_bdPhoneSupport_hasPrimaryPhoneNumberChanged()) {
             $this->_bdPhoneSupport_triggerPrimaryVerification();
-            $this->_bdPhoneSupport_removeUserPhones();
+            $this->_bdPhoneSupport_updateUserPhones();
+        }
+    }
+
+    protected function _postSaveAfterTransaction()
+    {
+        parent::_postSaveAfterTransaction();
+
+        if ($this->isUpdate()
+            && $this->isChanged('user_state')
+            && $this->get('user_state') === 'valid'
+        ) {
+            $userData = $this->getMergedData();
+            $phoneNumber = bdPhoneSupport_Integration::getUserPhoneNumber('primary', $userData);
+
+            /** @var bdPhoneSupport_Model_Verification $verificationModel */
+            $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
+            $verificationModel->requestVerify($phoneNumber, $errorPhraseKey, $userData);
         }
     }
 
@@ -65,7 +82,7 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
         return false;
     }
 
-    protected function _bdPhoneSupport_removeUserPhones()
+    protected function _bdPhoneSupport_updateUserPhones()
     {
         if (!$this->getOption(self::OPTION_UPDATE_USER_PHONES)) {
             return false;
@@ -89,12 +106,11 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
         if (bdPhoneSupport_Helper_DataSource::setUserValue('primary',
             bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED, $userData, 0)
         ) {
-            if ($userData['user_id'] == XenForo_Visitor::getUserId()) {
-                /** @var bdPhoneSupport_Model_Verification $verificationModel */
-                $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
-                $phoneNumber = bdPhoneSupport_Integration::getUserPhoneNumber('primary', $userData);
-                $verificationModel->requestVerify($phoneNumber);
-            }
+            $phoneNumber = bdPhoneSupport_Integration::getUserPhoneNumber('primary', $userData);
+
+            /** @var bdPhoneSupport_Model_Verification $verificationModel */
+            $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
+            $verificationModel->requestVerify($phoneNumber, $null, $userData);
         }
 
         return true;

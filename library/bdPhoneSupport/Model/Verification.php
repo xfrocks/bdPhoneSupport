@@ -12,6 +12,19 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
     {
         $this->standardizeViewingUserReference($viewingUser);
 
+        if (empty($viewingUser['user_id'])
+            || empty($viewingUser['user_state'])
+        ) {
+            return false;
+        }
+
+        if (!isset($viewingUser['permissions'])) {
+            /** @var XenForo_Model_User $userModel */
+            $userModel = $this->getModelFromCache('XenForo_Model_User');
+            $viewingUser = $userModel->getVisitingUserById($viewingUser['user_id']);
+            $viewingUser['permissions'] = XenForo_Permission::unserializePermissions($viewingUser['global_permission_cache']);
+        }
+
         /**
          * Please consider updating
          * @see bdPhoneSupport_Integration::showPrimaryVerifyNotice
