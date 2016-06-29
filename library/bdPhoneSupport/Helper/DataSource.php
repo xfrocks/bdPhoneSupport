@@ -136,6 +136,8 @@ class bdPhoneSupport_Helper_DataSource
         XenForo_DataWriter $dw,
         $fieldName
     ) {
+        $phoneNumber = preg_replace('#[^\+0-9]#', '', $phoneNumber);
+
         if (empty($phoneNumber)) {
             return true;
         }
