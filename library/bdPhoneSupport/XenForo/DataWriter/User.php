@@ -107,6 +107,9 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
             bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED, $userData, 0)
         ) {
             $phoneNumber = bdPhoneSupport_Integration::getUserPhoneNumber('primary', $userData);
+            if (empty($phoneNumber)) {
+                return true;
+            }
 
             /** @var bdPhoneSupport_Model_Verification $verificationModel */
             $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
