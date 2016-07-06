@@ -49,10 +49,11 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
         ) {
             $userData = $this->getMergedData();
             $phoneNumber = bdPhoneSupport_Integration::getUserPhoneNumber('primary', $userData);
-
-            /** @var bdPhoneSupport_Model_Verification $verificationModel */
-            $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
-            $verificationModel->requestVerify($phoneNumber, $errorPhraseKey, $userData);
+            if (!empty($phoneNumber)) {
+                /** @var bdPhoneSupport_Model_Verification $verificationModel */
+                $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
+                $verificationModel->requestVerify($phoneNumber, $errorPhraseKey, $userData);
+            }
         }
     }
 
