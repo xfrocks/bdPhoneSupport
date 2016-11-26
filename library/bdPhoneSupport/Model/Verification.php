@@ -185,6 +185,7 @@ class bdPhoneSupport_Model_Verification extends XenForo_Model
                     'username_censored' => $this->_censorForSms($userName),
                     'phone_number_censored' => $this->_censorForSms(
                         bdPhoneSupport_Helper_PhoneNumber::standardize($phoneNumber)),
+                    'code' => $codeText,
                     'code_formatted' => $this->_formatCodeTextForSms($codeText),
                     'board_title' => XenForo_Application::getOptions()->get('boardTitle')
                 )
