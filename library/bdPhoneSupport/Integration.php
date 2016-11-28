@@ -44,22 +44,9 @@ class bdPhoneSupport_Integration
             }
         }
 
-        if (!bdPhoneSupport_Helper_DataSource::setUserValue(
-            $type,
-            bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED,
-            $user,
-            bdPhoneSupport_Helper_DataSource::DATA_VERIFIED_YES)
-        ) {
-            return false;
-        }
-
-        /** @var bdPhoneSupport_Model_UserPhone $userPhoneModel */
-        $userPhoneModel = XenForo_Model::create('bdPhoneSupport_Model_UserPhone');
-        if (!$userPhoneModel->addUserPhone($user['user_id'], $phoneNumber)) {
-            return false;
-        }
-
-        return true;
+        return bdPhoneSupport_Helper_DataSource::setUserValue($type,
+            bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED, $user,
+            bdPhoneSupport_Helper_DataSource::DATA_VERIFIED_YES);
     }
 
     public static function getUserPhoneNumber($type = 'primary', array $user = array())

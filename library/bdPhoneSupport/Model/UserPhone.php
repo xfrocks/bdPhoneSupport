@@ -17,17 +17,6 @@ class bdPhoneSupport_Model_UserPhone extends XenForo_Model
         ));
     }
 
-    public function addUserPhone($userId, $phoneNumber)
-    {
-        $this->_getDb()->insert('xf_bdphonesupport_user_phone', array(
-            'user_id' => $userId,
-            'phone_number' => $phoneNumber,
-            'verify_date' => XenForo_Application::$time
-        ));
-
-        return $this->_getDb()->lastInsertId();
-    }
-
     public function updateUserPhones($userId, array $phoneNumbers)
     {
         $userPhones = $this->_getDb()->fetchAll('
@@ -79,7 +68,11 @@ class bdPhoneSupport_Model_UserPhone extends XenForo_Model
         }
 
         foreach ($newPhoneNumbers as $newPhoneNumber) {
-            $this->addUserPhone($userId, $newPhoneNumber);
+            $db->insert('xf_bdphonesupport_user_phone', array(
+                'user_id' => $userId,
+                'phone_number' => $newPhoneNumber,
+                'verify_date' => XenForo_Application::$time
+            ));
         }
 
         XenForo_Db::commit($db);

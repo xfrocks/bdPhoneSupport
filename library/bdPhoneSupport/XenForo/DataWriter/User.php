@@ -5,6 +5,22 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
     const OPTION_UPDATE_VERIFIED_ON_CHANGE = 'bdPhoneSupport_updateVerifiedOnChange';
     const OPTION_UPDATE_USER_PHONES = 'bdPhoneSupport_updateUserPhones';
 
+    public function bdPhoneSupport_isCustomFieldUpdated($fieldId)
+    {
+        return isset($this->_updateCustomFields[$fieldId]);
+    }
+
+    public function bdPhoneSupport_setCustomField($fieldId, $fieldValue)
+    {
+        $fieldValues = array();
+        if (is_array($this->_updateCustomFields)) {
+            $fieldValues = $this->_updateCustomFields;
+        }
+        $fieldValues[$fieldId] = $fieldValue;
+
+        return $this->setCustomFields($fieldValues);
+    }
+
     protected function _getFields()
     {
         $fields = parent::_getFields();
@@ -29,11 +45,26 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
         return $options;
     }
 
+    protected function _preSave()
+    {
+        parent::_preSave();
+
+        if (bdPhoneSupport_Helper_DataSource::isChangeDw($this,
+            'primary', bdPhoneSupport_Helper_DataSource::OPTION_KEY_PHONE_NUMBER)
+        ) {
+            $this->_bdPhoneSupport_markPrimaryUnverified();
+        }
+    }
+
     protected function _postSave()
     {
         parent::_postSave();
 
-        if ($this->_bdPhoneSupport_hasPrimaryPhoneNumberChanged()) {
+        $primaryPhoneNumberChanged = bdPhoneSupport_Helper_DataSource::isChangeDw($this,
+            'primary', bdPhoneSupport_Helper_DataSource::OPTION_KEY_PHONE_NUMBER);
+        $primaryVerifiedChanged = bdPhoneSupport_Helper_DataSource::isChangeDw($this,
+            'primary', bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED);
+        if ($primaryPhoneNumberChanged || $primaryVerifiedChanged) {
             $this->_bdPhoneSupport_triggerPrimaryVerification();
             $this->_bdPhoneSupport_updateUserPhones();
         }
@@ -57,30 +88,36 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
         }
     }
 
-    protected function _bdPhoneSupport_hasPrimaryPhoneNumberChanged()
+    protected function _bdPhoneSupport_markPrimaryUnverified()
     {
-        $primaryDataSource = bdPhoneSupport_Option::get('primaryDataSource');
-        if (empty($primaryDataSource['type'])) {
+        if (!$this->getOption(self::OPTION_UPDATE_VERIFIED_ON_CHANGE)
+            || $this->getOption(self::OPTION_ADMIN_EDIT)
+        ) {
+            return false;
+        }
+        $this->setOption(self::OPTION_UPDATE_VERIFIED_ON_CHANGE, false);
+
+        return bdPhoneSupport_Helper_DataSource::setUserValue('primary',
+            bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED, $this, 0);
+    }
+
+    protected function _bdPhoneSupport_triggerPrimaryVerification()
+    {
+        $userData = $this->getMergedData();
+        $phoneNumber = bdPhoneSupport_Integration::getUserPhoneNumber('primary', $userData);
+        if (empty($phoneNumber)) {
             return false;
         }
 
-        switch ($primaryDataSource['type']) {
-            case 'db':
-                $dbTable = $primaryDataSource['dbTable'];
-                $dbColumn = $primaryDataSource['dbColumn'];
-                if ($this->isChanged($dbColumn, $dbTable)) {
-                    return true;
-                }
-                break;
-            case 'userField':
-                $userFieldId = $primaryDataSource['userFieldId'];
-                if (isset($this->_updateCustomFields[$userFieldId])) {
-                    return true;
-                }
-                break;
+        $verified = bdPhoneSupport_Helper_DataSource::getUserValue('primary',
+            bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED, $this->getMergedData());
+        if (!empty($verified)) {
+            return false;
         }
 
-        return false;
+        /** @var bdPhoneSupport_Model_Verification $verificationModel */
+        $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
+        return $verificationModel->requestVerify($phoneNumber, $null, $userData);
     }
 
     protected function _bdPhoneSupport_updateUserPhones()
@@ -91,32 +128,5 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
         $this->setOption(self::OPTION_UPDATE_USER_PHONES, false);
 
         return bdPhoneSupport_Integration::updateUserPhones($this->getMergedData());
-    }
-
-    protected function _bdPhoneSupport_triggerPrimaryVerification()
-    {
-        if (!$this->getOption(self::OPTION_UPDATE_VERIFIED_ON_CHANGE)
-            || $this->getOption(self::OPTION_ADMIN_EDIT)
-        ) {
-            return false;
-        }
-        $this->setOption(self::OPTION_UPDATE_VERIFIED_ON_CHANGE, false);
-
-        $userData = $this->getMergedData();
-
-        if (bdPhoneSupport_Helper_DataSource::setUserValue('primary',
-            bdPhoneSupport_Helper_DataSource::OPTION_KEY_VERIFIED, $userData, 0)
-        ) {
-            $phoneNumber = bdPhoneSupport_Integration::getUserPhoneNumber('primary', $userData);
-            if (empty($phoneNumber)) {
-                return true;
-            }
-
-            /** @var bdPhoneSupport_Model_Verification $verificationModel */
-            $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
-            $verificationModel->requestVerify($phoneNumber, $null, $userData);
-        }
-
-        return true;
     }
 }

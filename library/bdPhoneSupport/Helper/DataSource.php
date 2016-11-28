@@ -10,38 +10,38 @@ class bdPhoneSupport_Helper_DataSource
     const DATA_VERIFIED_YES = '1';
     const DATA_VERIFIED_NO = '0';
 
-    public static function setUserValue($type, $optionKeyFormat, $userIdOrArray, $value)
+    /**
+     * @param string $type
+     * @param string $optionKeyFormat
+     * @param int|array|XenForo_DataWriter_User $userData
+     * @param mixed $value
+     * @return bool|null
+     */
+    public static function setUserValue($type, $optionKeyFormat, $userData, $value)
     {
         $dataSource = bdPhoneSupport_Option::get(self::_buildOptionKey($type, $optionKeyFormat));
-        if (empty($dataSource['type'])) {
+        if (empty($dataSource['type']) || empty($userData)) {
             return null;
         }
 
         /** @var XenForo_DataWriter_User $userDw */
-        $userDw = XenForo_DataWriter::create('XenForo_DataWriter_User');
-        if (is_array($userIdOrArray)) {
-            $userDw->setExistingData($userIdOrArray, true);
+        $userDw = null;
+        $userDataIsDw = false;
+        if (is_object($userData) && $userData instanceof XenForo_DataWriter_User) {
+            $userDw = $userData;
+            $userDataIsDw = true;
         } else {
-            $userDw->setExistingData($userIdOrArray);
-        }
-
-        self::setUserValueDw($userDw, $optionKeyFormat, $dataSource, $value);
-
-        if ($optionKeyFormat === self::OPTION_KEY_VERIFIED
-            && $value === self::DATA_VERIFIED_YES
-            && $type !== 'some'
-        ) {
-            $someDataSource = bdPhoneSupport_Option::get(self::_buildOptionKey('some', $optionKeyFormat));
-            if (!empty($someDataSource['type'])) {
-                self::setUserValueDw($userDw, $optionKeyFormat, $someDataSource, self::DATA_VERIFIED_YES);
+            if (is_array($userData)) {
+                $userDw = XenForo_DataWriter::create('XenForo_DataWriter_User');
+                $userDw->setExistingData($userData, true);
+            } elseif (is_numeric($userData)) {
+                $userDw = XenForo_DataWriter::create('XenForo_DataWriter_User');
+                $userDw->setExistingData(intval($userData));
+            } else {
+                return null;
             }
         }
 
-        return $userDw->save();
-    }
-
-    public static function setUserValueDw(XenForo_DataWriter_User $userDw, $optionKeyFormat, $dataSource, $value)
-    {
         switch ($dataSource['type']) {
             case 'db':
                 $userDw->set($dataSource['dbColumn'], $value, $dataSource['dbTable']);
@@ -50,8 +50,24 @@ class bdPhoneSupport_Helper_DataSource
                 if ($optionKeyFormat === self::OPTION_KEY_VERIFIED) {
                     $userDw->setOption(XenForo_DataWriter_User::OPTION_ADMIN_EDIT, true);
                 }
-                $userDw->setCustomFields(array($dataSource['userFieldId'] => $value));
+                /** @var bdPhoneSupport_XenForo_DataWriter_User $ourDw */
+                $ourDw = $userDw;
+                $ourDw->bdPhoneSupport_setCustomField($dataSource['userFieldId'], $value);
                 break;
+        }
+
+        if ($optionKeyFormat === self::OPTION_KEY_VERIFIED
+            && $value === self::DATA_VERIFIED_YES
+            && $type !== 'some'
+        ) {
+            self::setUserValue('some', self::OPTION_KEY_VERIFIED, $userDw, self::DATA_VERIFIED_YES);
+        }
+
+        if (!$userDataIsDw) {
+            return $userDw->save();
+        } else {
+            // a data writer is given, let the caller handle the save
+            return true;
         }
     }
 
@@ -103,6 +119,25 @@ class bdPhoneSupport_Helper_DataSource
         }
 
         return '';
+    }
+
+    public static function isChangeDw(XenForo_DataWriter_User $userDw, $type, $optionKeyFormat)
+    {
+        $dataSource = bdPhoneSupport_Option::get(self::_buildOptionKey($type, $optionKeyFormat));
+        if (empty($dataSource['type'])) {
+            return false;
+        }
+
+        switch ($dataSource['type']) {
+            case 'db':
+                return $userDw->isChanged($dataSource['dbColumn'], $dataSource['dbTable']);
+            case 'userField':
+                /** @var bdPhoneSupport_XenForo_DataWriter_User $ourDw */
+                $ourDw = $userDw;
+                return $ourDw->bdPhoneSupport_isCustomFieldUpdated($dataSource['userFieldId']);
+        }
+
+        return false;
     }
 
     public static function prepareUserFields($type, $optionKeyFormat, array &$fields)
