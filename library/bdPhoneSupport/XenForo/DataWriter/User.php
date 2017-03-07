@@ -78,13 +78,9 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
             && $this->isChanged('user_state')
             && $this->get('user_state') === 'valid'
         ) {
-            $userData = $this->getMergedData();
-            $phoneNumber = bdPhoneSupport_Integration::getUserPhoneNumber('primary', $userData);
-            if (!empty($phoneNumber)) {
-                /** @var bdPhoneSupport_Model_Verification $verificationModel */
-                $verificationModel = $this->getModelFromCache('bdPhoneSupport_Model_Verification');
-                $verificationModel->requestVerify($phoneNumber, $errorPhraseKey, $userData);
-            }
+            // automatically trigger verification on user state change to `valid`
+            // usually this happens if user successfully verifies via email
+            $this->_bdPhoneSupport_triggerPrimaryVerification();
         }
     }
 
