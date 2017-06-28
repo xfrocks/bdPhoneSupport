@@ -42,4 +42,11 @@ class bdPhoneSupport_Listener
             $extend[] = 'bdPhoneSupport_XenForo_ControllerPublic_Misc';
         }
     }
+
+    public static function load_class_XenForo_ControllerAdmin_User($class, array &$extend)
+    {
+        if ($class === 'XenForo_ControllerAdmin_User') {
+            $extend[] = 'bdPhoneSupport_XenForo_ControllerAdmin_User';
+        }
+    }
 }

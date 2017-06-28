@@ -93,6 +93,44 @@
 </xen:form>
 
 <xen:edithint template="tools_rebuild" />]]></template>
+    <template title="bdPhoneSupport_user_edit"><![CDATA[<xen:if hascontent="true">
+<fieldset>
+	<xen:contentcheck>
+
+	<xen:if is="{$bdPhoneSupport} && {$bdPhoneSupport.primaryPhoneNumber} !== null">
+	<xen:textboxunit label="{xen:phrase bdPhoneSupport_primary_phone_number}:"
+		name="bdPhoneSupport[primary]"
+		value="{$bdPhoneSupport.primaryPhoneNumber}"
+		inputclass="OptOut"
+	/>
+	</xen:if>
+
+	<xen:if is="{$bdPhoneSupport} && {$bdPhoneSupport.primaryVerified} !== null">
+	<xen:checkboxunit label="">
+		<xen:option name="bdPhoneSupport[primary_verify]"
+			value="1" selected="{$bdPhoneSupport.primaryVerified}">
+			{xen:phrase bdPhoneSupport_status_verified}
+		</xen:option>
+	</xen:checkboxunit>
+	</xen:if>
+
+	<xen:if is="{$bdPhoneSupport} && {$bdPhoneSupport.someVerified} !== null">
+	<xen:checkboxunit label="">
+		<xen:option name="bdPhoneSupport[some_verify]"
+			value="1" selected="{$bdPhoneSupport.someVerified}">
+			{xen:phrase bdPhoneSupport_status_verified_once}
+		</xen:option>
+	</xen:checkboxunit>
+	</xen:if>
+
+	</xen:contentcheck>
+	
+	<input type="hidden" name="bdPhoneSupport_included" value="1" />
+</fieldset>
+</xen:if>
+
+<xen:edithint template="user_edit" />
+<xen:edithint template="custom_fields_edit" />]]></template>
   </admin_templates>
   <admin_template_modifications>
     <modification template="helper_criteria_user" modification_key="bdPhoneSupport_helper_criteria_user" description="Render additional criteria fields." execution_order="10" enabled="1" action="preg_replace">
@@ -109,6 +147,12 @@ $2]]></replace>
 
 <xen:include template="bdPhoneSupport_tools_rebuild" />]]></replace>
     </modification>
+    <modification template="user_edit" modification_key="bdPhoneSupport_user_edit" description="" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#<xen:if is="{\$customFieldsGrouped.contact}">.+?</xen:if>#s]]></find>
+      <replace><![CDATA[$0
+
+<xen:include template="bdPhoneSupport_user_edit" />]]></replace>
+    </modification>
   </admin_template_modifications>
   <code_events/>
   <code_event_listeners>
@@ -117,6 +161,7 @@ $2]]></replace>
     <listener event_id="file_health_check" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="file_health_check" active="1" hint="" description=""/>
     <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerPublic_Account" active="1" hint="XenForo_ControllerPublic_Account" description="XenForo_ControllerPublic_Account"/>
     <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerPublic_Misc" active="1" hint="XenForo_ControllerPublic_Misc" description="XenForo_ControllerPublic_Misc"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_ControllerAdmin_User" active="1" hint="XenForo_ControllerAdmin_User" description="XenForo_ControllerAdmin_User"/>
     <listener event_id="load_class_datawriter" execute_order="10" callback_class="bdPhoneSupport_Listener" callback_method="load_class_XenForo_DataWriter_User" active="1" hint="XenForo_DataWriter_User" description="XenForo_DataWriter_User"/>
   </code_event_listeners>
   <cron/>

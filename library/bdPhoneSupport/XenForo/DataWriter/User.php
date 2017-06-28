@@ -49,6 +49,12 @@ class bdPhoneSupport_XenForo_DataWriter_User extends XFCP_bdPhoneSupport_XenForo
     {
         parent::_preSave();
 
+        if (isset($GLOBALS['bdPhoneSupport_XenForo_ControllerAdmin_User::actionSave'])) {
+            /** @var bdPhoneSupport_XenForo_ControllerAdmin_User $controller */
+            $controller = $GLOBALS['bdPhoneSupport_XenForo_ControllerAdmin_User::actionSave'];
+            $controller->bdPhoneSupport_actionSave($this);
+        }
+
         if (bdPhoneSupport_Helper_DataSource::isChangeDw($this,
             'primary', bdPhoneSupport_Helper_DataSource::OPTION_KEY_PHONE_NUMBER)
         ) {
