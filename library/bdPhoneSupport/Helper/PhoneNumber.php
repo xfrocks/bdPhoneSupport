@@ -8,8 +8,16 @@ class bdPhoneSupport_Helper_PhoneNumber
             $phoneNumber = '+' . substr($phoneNumber, 2);
         }
 
-        if (substr($phoneNumber, 0, 1) !== '+') {
-            $phoneNumber = bdPhoneSupport_Option::get('defaultCountryCallCode') . ltrim($phoneNumber, '0');
+        $defaultCountryCallCode = bdPhoneSupport_Option::get('defaultCountryCallCode');
+        if (!empty($defaultCountryCallCode)) {
+            if (substr($phoneNumber, 0, 1) !== '+') {
+                $phoneNumber = $defaultCountryCallCode . ltrim($phoneNumber, '0');
+            }
+
+            if (substr($phoneNumber, strlen($defaultCountryCallCode), 1) === '0') {
+                $phoneNumber = substr($phoneNumber, 0, strlen($defaultCountryCallCode))
+                    . substr($phoneNumber, strlen($defaultCountryCallCode) + 1);
+            }
         }
 
         return $phoneNumber;
